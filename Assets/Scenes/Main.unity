@@ -25070,6 +25070,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4000012564366324, guid: 36667f34d4b750c4695e409fb89b51f8, type: 3}
   m_PrefabInstance: {fileID: 1045508476}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1046532455 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5559806390178424824, guid: db09eef1c4dbfa146b594b379887adf4, type: 3}
+  m_PrefabInstance: {fileID: 1114255123}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1047406443
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27093,6 +27098,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1460777175096851664, guid: db09eef1c4dbfa146b594b379887adf4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1114255128}
+    - targetCorrespondingSourceObject: {fileID: 1460777175096851664, guid: db09eef1c4dbfa146b594b379887adf4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1114255131}
   m_SourcePrefab: {fileID: 100100000, guid: db09eef1c4dbfa146b594b379887adf4, type: 3}
 --- !u!1 &1114255124 stripped
 GameObject:
@@ -27141,7 +27149,6 @@ MonoBehaviour:
   walkSpeed: 3
   runSpeed: 6
   backSpeed: 2
-  jumpForce: 5
   gravity: -9.81
   cameraTransform: {fileID: 9539461}
   mouseSensitivity: 2
@@ -27171,6 +27178,19 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &1114255131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1114255124}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e586703318f34e748bd3877a8bc3a8fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leftHand: {fileID: 1046532455}
 --- !u!1001 &1116098064
 PrefabInstance:
   m_ObjectHideFlags: 0
