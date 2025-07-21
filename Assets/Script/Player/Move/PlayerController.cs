@@ -88,7 +88,6 @@ public class PlayerController : MonoBehaviour
             velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
             animator.SetBool("isJump", true);  // 점프 시작
             isGrounded = false;
-            Debug.Log("jump");
         }
 
         velocity.y += gravity * Time.deltaTime;
