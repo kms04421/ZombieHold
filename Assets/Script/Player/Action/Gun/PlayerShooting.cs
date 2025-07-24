@@ -63,14 +63,14 @@ public class PlayerShooting : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, range))
         {
-          //  Debug.Log("맞췄다! 대상: " + hit.collider.name);
+            Debug.Log("맞췄다! 대상: " + hit.collider.name);
 
             // 예시: 맞은 대상이 Health 컴포넌트를 가지고 있다면 데미지 처리
-            /*  var health = hit.collider.GetComponent<Health>();
-              if (health != null)
+              var hitbox = hit.collider.GetComponent<HitBox>();
+              if (hitbox != null)
               {
-                  health.TakeDamage(damage);
-              }*/
+                  hitbox.OnHit(damage);
+              }
 
             // 이펙트나 사운드도 여기에 추가 가능
          
