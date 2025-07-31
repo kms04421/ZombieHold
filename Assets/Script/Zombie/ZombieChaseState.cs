@@ -12,7 +12,7 @@ namespace YourGame.AI
         {
             z.Agent.isStopped = false;
             z.Agent.speed = speed;
-
+        
         }
 
         public void Execute(Zombie z)
@@ -27,12 +27,12 @@ namespace YourGame.AI
 
         public void Exit(Zombie z)
         {
-            // 상태 종료 시 필요한 정리 작업
+            z.Agent.isStopped = true;
+          
         }
 
         public void OnHit(Zombie z, float damage, Zombie.HitType hitType)
         {
-            Debug.Log("hit");
             z.ApplyDamage(damage);
             if (z.Hp <= 0f)
             {

@@ -19,8 +19,10 @@ namespace YourGame.AI
         public float Hp { get; private set; }
         public NavMeshAgent Agent { get; private set; }
         public Animator Animator { get; private set; } 
-        public IZombieState NormalState { get; private set; }
+        public IZombieState ChaseState { get; private set; }
         public IZombieState DeadState { get; private set; }
+
+        public IZombieState AttackState { get; private set; }
 
         private IZombieState currentState;
 
@@ -30,13 +32,18 @@ namespace YourGame.AI
             Agent = GetComponent<NavMeshAgent>();
             Hp = maxHp;
 
-            NormalState = new ZombieChaseState(baseSpeed);
+            ChaseState = new ZombieChaseState(baseSpeed);
             DeadState = new ZombieDeadState();
+            AttackState = new NomalZombieAttack();
         }
-
+        private void OnEnable()
+        {
+            chaseTarget = GameManger.Instance.GetPlayer();
+            Debug.Log(Hp);
+        }
         private void Start()
         {
-            ChangeState(NormalState);
+            ChangeState(ChaseState);
         }
 
         private void Update()
@@ -63,10 +70,16 @@ namespace YourGame.AI
 
         public void Die()
         {
-            Debug.Log("Zombie died.");
-            Agent.isStopped = true;
-            Animator.SetBool("Die", true);
+            Animator.SetTrigger("Die");
+            Invoke("ReturnZombie", 2);
             // 사망 애니메이션, 콜라이더 비활성화 등
+        }
+        public void ReturnZombie()
+        {
+            Hp = maxHp;
+            ChangeState(ChaseState);
+            // 풀로 반환
+            ZombiePoolManager.Instance.ReturnZombie(gameObject);
         }
     }
 }
