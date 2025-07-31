@@ -2,21 +2,27 @@ using UnityEngine;
 
 namespace YourGame.AI
 {
-    public class ZombieNormalState : IZombieState
+    public class ZombieChaseState : IZombieState
     {
         private readonly float speed;
 
-        public ZombieNormalState(float speed) => this.speed = speed;
+        public ZombieChaseState(float speed) => this.speed = speed;
 
         public void Enter(Zombie z)
         {
+            z.Agent.isStopped = false;
             z.Agent.speed = speed;
-            // z.Animator.Play("Walk");
+
         }
 
         public void Execute(Zombie z)
         {
-            // 추적/순찰 로직
+            if (z.ChaseTarget != null)
+            {
+                z.Agent.SetDestination(z.ChaseTarget.position);
+            }
+               
+            z.Animator.SetFloat("speed", speed);
         }
 
         public void Exit(Zombie z)
@@ -26,6 +32,7 @@ namespace YourGame.AI
 
         public void OnHit(Zombie z, float damage, Zombie.HitType hitType)
         {
+            Debug.Log("hit");
             z.ApplyDamage(damage);
             if (z.Hp <= 0f)
             {

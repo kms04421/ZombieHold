@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 using YourGame.AI;
 using static YourGame.AI.Zombie;
 public class HitBox : MonoBehaviour

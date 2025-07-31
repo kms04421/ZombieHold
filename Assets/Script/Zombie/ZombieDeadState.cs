@@ -1,16 +1,15 @@
 using UnityEngine;
 
-public class ZombieDeadState : MonoBehaviour
+namespace YourGame.AI
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public class ZombieDeadState : IZombieState
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        public void Enter(Zombie z)
+        {
+            z.Die();        
+        }
+        public void Execute(Zombie z) { }
+        public void Exit(Zombie z) { }
+        public void OnHit(Zombie z, float damage, Zombie.HitType hitType) { }
     }
 }
