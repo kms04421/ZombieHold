@@ -5,11 +5,11 @@ using UnityEngine.InputSystem;
 public class PlayerShooting : MonoBehaviour
 {
     private enum FireMode { SemiAuto, FullAuto }
-
+    private PlayerController playerController;
     public Camera fpsCamera;        // 카메라 (총알 방향 기준)
 
     public float range = 100f;      // 총 사거리
-    public float damage = 10f;      // 데미지
+    public float damage = 10f;      // 데미지 추후 총 + 플레이어 데미지  
     const float flashDuration = 0.03f;  // muzzFlash유지시간
 
     public GameObject muzzleFlash;
@@ -26,6 +26,7 @@ public class PlayerShooting : MonoBehaviour
 
     private void Start()
     {
+        playerController = GetComponent<PlayerController>();
         gunAudioSource = GetComponent<AudioSource>();
     }
     void Update()
@@ -63,7 +64,7 @@ public class PlayerShooting : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, range))
         {
-          //  Debug.Log("hit 대상: " + hit.collider.name);
+           // Debug.Log("hit 대상: " + hit.collider.name);
 
             // 예시: 맞은 대상이 Health 컴포넌트를 가지고 있다면 데미지 처리
               var hitbox = hit.collider.GetComponent<HitBox>();
@@ -91,11 +92,6 @@ public class PlayerShooting : MonoBehaviour
             gunAudioSource.Stop();
             gunAudioSource.PlayOneShot(gunShotClip);
         }
-
-
-
-        // 디버그 선
-        Debug.DrawRay(ray.origin, ray.direction * range, Color.red, 1f);
     }
     IEnumerator FlashMuzzle()
     {

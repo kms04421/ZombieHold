@@ -3,6 +3,8 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovent : MonoBehaviour
 {
+   
+
     [Header("Movement")]
     public float walkSpeed = 3f;
     public float runSpeed = 6f;
@@ -23,6 +25,7 @@ public class PlayerMovent : MonoBehaviour
 
     void Start()
     {
+
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
         Cursor.lockState = CursorLockMode.Locked;

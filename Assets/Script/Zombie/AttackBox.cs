@@ -1,11 +1,12 @@
 using UnityEngine;
 using YourGame.AI;
-
+using System.Collections;
 public class AttackBox : MonoBehaviour
 {
     public Zombie Zombie;
-    private bool isInAttackRange = false;
-    GameObject targetPlayer;
+    public bool isInAttackRange = false;
+    public GameObject targetPlayer;
+    private Coroutine waitExitCoroutine;
     private void OnTriggerEnter(Collider other)
     {
         if(other.CompareTag("Player"))
@@ -13,6 +14,7 @@ public class AttackBox : MonoBehaviour
             isInAttackRange = true;
             targetPlayer = other.gameObject;
             Zombie.ChangeState(Zombie.AttackState);
+         
         }
         
     }
@@ -22,14 +24,26 @@ public class AttackBox : MonoBehaviour
         {
             isInAttackRange = false;
             targetPlayer = null;
+            Zombie.Animator.SetBool("Attack", false);
+            if (waitExitCoroutine != null)
+                StopCoroutine(waitExitCoroutine); // 중복 방지
+
+            waitExitCoroutine = StartCoroutine(WaitForAttackEndAndChangeState());
         }
     }
-    public void TryHit()
+
+    private IEnumerator WaitForAttackEndAndChangeState()
     {
-        if (isInAttackRange && targetPlayer != null)
+        AnimatorStateInfo stateInfo = Zombie.Animator.GetCurrentAnimatorStateInfo(0);
+   
+        // "attack" 애니메이션이 끝날 때까지 대기
+        while (!(stateInfo.IsName("attack") && stateInfo.normalizedTime >= 0.99f))
         {
-            // 데미지 처리
-           // targetPlayer.GetComponent<PlayerHealth>()?.TakeDamage(10);
+            yield return null;
+            stateInfo = Zombie.Animator.GetCurrentAnimatorStateInfo(0);
         }
+
+        Zombie.ChangeState(Zombie.ChaseState);
+        waitExitCoroutine = null;
     }
 }

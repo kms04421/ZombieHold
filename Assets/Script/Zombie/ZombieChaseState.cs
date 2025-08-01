@@ -34,7 +34,7 @@ namespace YourGame.AI
         public void OnHit(Zombie z, float damage, Zombie.HitType hitType)
         {
             z.ApplyDamage(damage);
-            if (z.Hp <= 0f)
+            if (z.currentHealth <= 0f)
             {
                 z.ChangeState(z.DeadState);
                 return;

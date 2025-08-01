@@ -8,20 +8,24 @@ namespace YourGame.AI
     {
         public enum HitType { Normal, Head, Leg }
 
-        [SerializeField] private float maxHp = 100f;
-        [SerializeField] private float baseSpeed = 0.1f; // speed 0 , 1 :걷기, 3 :뛰기
-        [SerializeField][Range(0.1f, 1f)] private float slowFactor = 0.5f;
-
         [Header("Chase")]
-        [SerializeField] private Transform chaseTarget; // 임시
+        [SerializeField] private Transform chaseTarget; // 추적 대상
         public Transform ChaseTarget => chaseTarget;
 
-        public float Hp { get; private set; }
+        [Header("ZombieData")]
+        public float currentHealth { get; private set; }
+        [SerializeField] private float maxHp = 100f; // 임시
+        [SerializeField] private float baseSpeed = 1f; // speed 0 , 1 :걷기, 3 :뛰기
+        private float zombieDamege = 10f;
+
+        [Header("Component ")]
         public NavMeshAgent Agent { get; private set; }
-        public Animator Animator { get; private set; } 
+        public Animator Animator { get; private set; }
+        [SerializeField]private AttackBox attackBox;
+
+        [Header("IZombieState")]
         public IZombieState ChaseState { get; private set; }
         public IZombieState DeadState { get; private set; }
-
         public IZombieState AttackState { get; private set; }
 
         private IZombieState currentState;
@@ -30,7 +34,7 @@ namespace YourGame.AI
         {
             Animator = GetComponent<Animator>();
             Agent = GetComponent<NavMeshAgent>();
-            Hp = maxHp;
+            currentHealth = maxHp;
 
             ChaseState = new ZombieChaseState(baseSpeed);
             DeadState = new ZombieDeadState();
@@ -38,8 +42,8 @@ namespace YourGame.AI
         }
         private void OnEnable()
         {
-            chaseTarget = GameManger.Instance.GetPlayer();
-            Debug.Log(Hp);
+            chaseTarget = GameManager.Instance.GetPlayer();
+            ChangeState(ChaseState);
         }
         private void Start()
         {
@@ -52,7 +56,7 @@ namespace YourGame.AI
         }
 
         public void TakeDamage(float damage, HitType hitType)
-        {
+        {    
             currentState.OnHit(this, damage, hitType);
         }
 
@@ -65,7 +69,7 @@ namespace YourGame.AI
       
         public void ApplyDamage(float damage)
         {
-            Hp -= damage;
+            currentHealth -= damage;
         }
 
         public void Die()
@@ -76,10 +80,19 @@ namespace YourGame.AI
         }
         public void ReturnZombie()
         {
-            Hp = maxHp;
+            currentHealth = maxHp;
             ChangeState(ChaseState);
             // 풀로 반환
             ZombiePoolManager.Instance.ReturnZombie(gameObject);
         }
+        public void TryHit()
+        {
+            if (attackBox.isInAttackRange && attackBox.targetPlayer != null)
+            {
+                // 데미지 처리
+                attackBox.targetPlayer.GetComponent<Health>()?.TakeDamage(zombieDamege);
+            }
+        }
+
     }
 }

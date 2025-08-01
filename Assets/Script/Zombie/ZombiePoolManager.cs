@@ -48,7 +48,6 @@ public class ZombiePoolManager : MonoBehaviour
 
     public void ReturnZombie(GameObject zombie)
     {
-        Debug.Log(pool.Count);
         zombie.SetActive(false);
         pool.Enqueue(zombie);
     }
