@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
+    private float maxHp = 0;
     private float currentHealth;
     private PlayerController playerController;
     public delegate void OnPlayerDeath();
@@ -10,7 +11,21 @@ public class Health : MonoBehaviour
     void Start()
     {
         playerController = GetComponent<PlayerController>();
-        currentHealth = playerController.playerData.MaxHp;
+        if (playerController != null)
+        {
+            maxHp = playerController.playerData.MaxHp;
+            currentHealth = maxHp;
+        }
+        else
+        {
+            SetHP(100); // 임시
+        }
+       
+    }
+
+    public void IncreaseMaxHp(float amount)
+    {
+        maxHp += amount;
     }
 
     public void TakeDamage(float amount)
@@ -31,11 +46,20 @@ public class Health : MonoBehaviour
 
     public void Heal(float amount)
     {
-        currentHealth = Mathf.Min(currentHealth + amount, playerController.playerData.MaxHp);
+        currentHealth = Mathf.Min(currentHealth + amount, maxHp);
     }
 
     public float GetHealthRatio()
     {
-        return currentHealth / playerController.playerData.MaxHp;
+        return currentHealth / maxHp;
     }
+
+    #region 구조물 
+    public void SetHP(float value)
+    {
+        maxHp = value;
+        currentHealth = value;
+    }
+
+    #endregion
 }

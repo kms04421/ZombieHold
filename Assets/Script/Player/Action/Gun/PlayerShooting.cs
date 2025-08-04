@@ -7,20 +7,21 @@ public class PlayerShooting : MonoBehaviour
     private enum FireMode { SemiAuto, FullAuto }
     private PlayerController playerController;
     public Camera fpsCamera;        // 카메라 (총알 방향 기준)
-
-    public float range = 100f;      // 총 사거리
-    public float damage = 10f;      // 데미지 추후 총 + 플레이어 데미지  
     const float flashDuration = 0.03f;  // muzzFlash유지시간
 
-    public GameObject muzzleFlash;
     private Coroutine muzzleCoroutine;
 
-    private FireMode fireMode = FireMode.FullAuto;
 
-    public float fireRate = 0.1f; // 연발 속도
     private float nextFireTime = 0f;
     private bool isFiring = false;
 
+    public GameObject TestGun;
+    [Header("GunData")]
+    public GameObject muzzleFlash;
+    public float fireRate = 0.1f; // 연발 속도
+    public float range = 100f;      // 총 사거리
+    public float damage = 10f;      // 데미지 추후 총 + 플레이어 데미지  
+    private FireMode fireMode = FireMode.SemiAuto;
     private AudioSource gunAudioSource;   // 총발사 소리용 AudioSource
     public AudioClip gunShotClip;        // 총발사 오디오 클립
 
@@ -85,6 +86,8 @@ public class PlayerShooting : MonoBehaviour
                     StopCoroutine(muzzleCoroutine);
                 }
                 muzzleCoroutine = StartCoroutine(FlashMuzzle());
+                playerController.SetWeapon(TestGun);
+                playerController.Shoot();   
             }
         }
         if (gunShotClip != null && gunAudioSource != null)

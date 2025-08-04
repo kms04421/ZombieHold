@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
-
+using System.Collections;
 namespace YourGame.AI
 {
     [RequireComponent(typeof(NavMeshAgent))]
@@ -36,12 +36,26 @@ namespace YourGame.AI
             Agent = GetComponent<NavMeshAgent>();
             currentHealth = maxHp;
 
-            ChaseState = new ZombieChaseState(baseSpeed);
+            ChaseState = new ZombieChaseState(Random.Range(1,4));
             DeadState = new ZombieDeadState();
             AttackState = new NomalZombieAttack();
         }
         private void OnEnable()
         {
+            if (GameManager.Instance.PlayerList.Count > 0)
+            {
+                chaseTarget = GameManager.Instance.GetPlayer();
+                ChangeState(ChaseState);
+            }
+            else
+            {
+                StartCoroutine(WaitForPlayers());
+            }
+        }
+
+        private IEnumerator WaitForPlayers()
+        {
+            yield return new WaitUntil(() => GameManager.Instance.PlayerList.Count > 0);
             chaseTarget = GameManager.Instance.GetPlayer();
             ChangeState(ChaseState);
         }

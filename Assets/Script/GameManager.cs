@@ -9,7 +9,6 @@ public class GameManager : Singleton<GameManager>
     {
         GameObject[] playerObjects = GameObject.FindGameObjectsWithTag("Player");
         PlayerList.AddRange(playerObjects);
-        Debug.Log(PlayerList.Count);
     }
 
     public Transform GetPlayer()
