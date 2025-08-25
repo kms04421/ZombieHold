@@ -3212,6 +3212,24 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4000012564366324, guid: 36667f34d4b750c4695e409fb89b51f8, type: 3}
   m_PrefabInstance: {fileID: 76690548}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &77080245 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 204957899837929642, guid: f4c5b5bb968e67c40a225b99204e536b, type: 3}
+  m_PrefabInstance: {fileID: 126810445}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &77080251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 77080245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f594a3e066c06e844972596cd094e389, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lootTable: {fileID: 11400000, guid: 4ab440ecd55114141bafd9744704675b, type: 2}
 --- !u!4 &78400169 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4000012506713666, guid: 58d97d456aead63499ac7d5316541f78, type: 3}
@@ -4653,7 +4671,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 204957899837929642, guid: f4c5b5bb968e67c40a225b99204e536b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 77080251}
   m_SourcePrefab: {fileID: 100100000, guid: f4c5b5bb968e67c40a225b99204e536b, type: 3}
 --- !u!1001 &127462539
 PrefabInstance:
@@ -38093,7 +38114,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1511438906
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43203,7 +43224,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1769698783
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43216,7 +43237,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e54e60025b2f694f933216fcf2af729, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnInterval: 2
 --- !u!4 &1769698784
 Transform:
   m_ObjectHideFlags: 0
@@ -47213,6 +47233,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerList: []
+  state: 0
+  dayCount: 1
+  isNight: 0
+  spawner: {fileID: 1769698783}
 --- !u!1001 &1950308816
 PrefabInstance:
   m_ObjectHideFlags: 0
