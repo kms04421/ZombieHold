@@ -1,22 +1,42 @@
 using UnityEngine;
+using System.Collections;
 
 public class ZombieSpawner : MonoBehaviour
 {
-    public float spawnInterval = 2f;
-    private float timer = 0f;
+    private float spawnInterval = 0.1f;
+    private Coroutine spawnCoroutine;
 
-    void Update()
+    
+    private IEnumerator SpawnZombies(int dayCount)
     {
-        timer += Time.deltaTime;
-
-        if (timer >= spawnInterval)
+        int spawnMaxCount =20 + (dayCount *2);
+        int spawnCount = 0;
+        while (spawnCount < spawnMaxCount)
         {
-            timer = 0f;
-
+            spawnCount++;   
             Vector3 spawnPos = transform.position + Random.insideUnitSphere * 10f;
             spawnPos.y = 0;
 
             ZombiePoolManager.Instance.GetZombie(spawnPos, Quaternion.identity);
+
+            yield return new WaitForSeconds(spawnInterval);
+        }
+    }
+
+    public void StartSpawning(int dayCount)
+    {
+        if (spawnCoroutine == null)
+        {
+            spawnCoroutine = StartCoroutine(SpawnZombies(dayCount));
+        }
+    }
+
+    public void StopSpawning()
+    {
+        if (spawnCoroutine != null)
+        {
+            StopCoroutine(spawnCoroutine);
+            spawnCoroutine = null;
         }
     }
 }
