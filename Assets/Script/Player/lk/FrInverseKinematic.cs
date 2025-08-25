@@ -7,7 +7,7 @@ public class FrInverseKinematic : MonoBehaviour
 
     private Animator animator;
     private int layerIndex_Weapons;
-
+    public bool enableIK = true; //  IK 켜기/끄기 제어용
     void Awake()
     {
         animator = GetComponent<Animator>();
@@ -16,7 +16,7 @@ public class FrInverseKinematic : MonoBehaviour
 
     private void OnAnimatorIK(int _layerIndex)
     {
-        if (_layerIndex != layerIndex_Weapons)
+        if (_layerIndex != layerIndex_Weapons || !enableIK)
         {
             return;
         }
@@ -38,5 +38,9 @@ public class FrInverseKinematic : MonoBehaviour
             animator.SetIKPosition(AvatarIKGoal.RightHand, rightHand.position);
             animator.SetIKRotation(AvatarIKGoal.RightHand, rightHand.rotation);
         }
+    }
+    public void SetIKActive(bool active)
+    {
+        enableIK = active;
     }
 }

@@ -23,9 +23,6 @@ public class FreeZombie_EyesGlow : MonoBehaviour
     {
         if (eyesGlow == 0)
         {
-
-
-
             BodyMaterials[0].DisableKeyword("_EMISSION");
             BodyMaterials[0].SetFloat("_EmissiveExposureWeight", 1);
         }

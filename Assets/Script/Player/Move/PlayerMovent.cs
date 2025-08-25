@@ -17,17 +17,15 @@ public class PlayerMovent : MonoBehaviour
     public float mouseSensitivity = 2f;
     private float xRotation = 0f;
 
-    public Animator animator;
-
+    private PlayerController playerController;
     private CharacterController controller;
     private Vector3 velocity;
     private bool isGrounded;
 
     void Start()
     {
-
+        playerController = GetComponent<PlayerController>();
         controller = GetComponent<CharacterController>();
-        animator = GetComponent<Animator>();
         Cursor.lockState = CursorLockMode.Locked;
     }
 
@@ -89,7 +87,7 @@ public class PlayerMovent : MonoBehaviour
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
-            animator.SetBool("isJump", true);  // 점프 시작
+            playerController.animator.SetBool("isJump", true);  // 점프 시작
             isGrounded = false;
         }
 
@@ -97,15 +95,15 @@ public class PlayerMovent : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
 
         // 애니메이션 파라미터
-        animator.SetBool("isMove", moveDir.magnitude > 0.1f);
-        animator.SetBool("isRun", isRunning);
-        animator.SetFloat("xDir", moveX);
-        animator.SetFloat("yDir", -moveZ);     
+        playerController.animator.SetBool("isMove", moveDir.magnitude > 0.1f);
+        playerController.animator.SetBool("isRun", isRunning);
+        playerController.animator.SetFloat("xDir", moveX);
+        playerController.animator.SetFloat("yDir", -moveZ);     
 
         // 착지 판별
-        if (isGrounded && animator.GetBool("isJump"))
+        if (isGrounded && playerController.animator.GetBool("isJump"))
         {
-            animator.SetBool("isJump", false);  // 착지 시 점프 종료
+            playerController.animator.SetBool("isJump", false);  // 착지 시 점프 종료
         }
     }
     }

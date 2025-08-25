@@ -1,7 +1,12 @@
 using UnityEngine;
 
-public class PlayerData 
+public class PlayerData
 {
+    public string room;
+    public string id;
+    public float x;
+    public float y;
+    public float z;
     public string PlayerName { get; private set; }
     public float MaxHp { get; private set; }
     public int Level { get; private set; }

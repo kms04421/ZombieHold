@@ -89,7 +89,7 @@ namespace YourGame.AI
         public void Die()
         {
             Animator.SetTrigger("Die");
-            Invoke("ReturnZombie", 2);
+            Invoke("ReturnZombie", 3);
             // 사망 애니메이션, 콜라이더 비활성화 등
         }
         public void ReturnZombie()
