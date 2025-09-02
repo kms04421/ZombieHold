@@ -4628,6 +4628,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2250164509622083707, guid: f4c5b5bb968e67c40a225b99204e536b, type: 3}
+      propertyPath: eyesGlow
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8019571942322711460, guid: f4c5b5bb968e67c40a225b99204e536b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 66.31928
@@ -27825,6 +27829,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07d2ed2592e75934fad39a1c8906f65d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TestObj: {fileID: 9010612053373108687, guid: 0c13b9c31fd059b468b2f1759c412e61, type: 3}
   walkSpeed: 3
   runSpeed: 6
   backSpeed: 2
@@ -29068,6 +29073,52 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 58d97d456aead63499ac7d5316541f78, type: 3}
+--- !u!1 &1137027070
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1137027071}
+  - component: {fileID: 1137027072}
+  m_Layer: 0
+  m_Name: 'PlacementManager '
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1137027071
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1137027070}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 65.754555, y: 3.9714606, z: -17.838715}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1137027072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1137027070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dec78a11e12574c4699cf91f1c921101, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 0}
+  isPlacing: 0
 --- !u!4 &1138594237 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4000013615273972, guid: 01fd6d8578da5054c80273c1d59d2cf9, type: 3}
@@ -47233,7 +47284,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerList: []
-  state: 0
   dayCount: 1
   isNight: 0
   spawner: {fileID: 1769698783}
@@ -52334,3 +52384,4 @@ SceneRoots:
   - {fileID: 1950192822}
   - {fileID: 126810445}
   - {fileID: 1511438907}
+  - {fileID: 1137027071}

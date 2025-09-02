@@ -4,10 +4,8 @@ using System.Collections;
 public class ZombieSpawner : MonoBehaviour
 {
     private float spawnInterval = 0.1f;
-    private Coroutine spawnCoroutine;
 
-    
-    private IEnumerator SpawnZombies(int dayCount)
+    public IEnumerator SpawnZombies(int dayCount)
     {
         int spawnMaxCount =20 + (dayCount *2);
         int spawnCount = 0;
@@ -21,22 +19,6 @@ public class ZombieSpawner : MonoBehaviour
 
             yield return new WaitForSeconds(spawnInterval);
         }
-    }
-
-    public void StartSpawning(int dayCount)
-    {
-        if (spawnCoroutine == null)
-        {
-            spawnCoroutine = StartCoroutine(SpawnZombies(dayCount));
-        }
-    }
-
-    public void StopSpawning()
-    {
-        if (spawnCoroutine != null)
-        {
-            StopCoroutine(spawnCoroutine);
-            spawnCoroutine = null;
-        }
+     
     }
 }

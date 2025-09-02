@@ -20,7 +20,7 @@ public class ZombiePoolManager : MonoBehaviour
         // Ç® »ý¼º
         for (int i = 0; i < poolSize; i++)
         {
-            GameObject zombie = Instantiate(zombiePrefab);
+            GameObject zombie = Instantiate(zombiePrefab,transform);
             zombie.SetActive(false);
             pool.Enqueue(zombie);
         }
@@ -36,7 +36,7 @@ public class ZombiePoolManager : MonoBehaviour
         }
         else
         {
-            zombie = Instantiate(zombiePrefab);
+            zombie = Instantiate(zombiePrefab,transform);
         }
 
         zombie.transform.position = position;
