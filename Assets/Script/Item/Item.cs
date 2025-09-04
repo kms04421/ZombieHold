@@ -12,4 +12,5 @@ public class Item : ScriptableObject
     [Header("속성")]
     public bool stackable = true; // 겹쳐쓸 수 있는지 여부
     public int maxStack = 99;     // 최대 개수
+    public int currentCount = 0;  // 현재 개수
 }

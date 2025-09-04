@@ -7,17 +7,24 @@ public class PlacementManager : Singleton<PlacementManager>
     public float maxDistance = 5f;
     public bool isPlacing= false;
     public LayerMask placementMask;
-    public void StartPlacement(GameObject newPrefab)
+    private Coroutine coroutine;
+    public void StartPlacement(GameObject newPrefab, System.Action<bool> callback)
     {
         prefab = newPrefab;
         if (previewObj != null) Destroy(previewObj);
         previewObj = Instantiate(prefab);
 
-        StartCoroutine(PlacementRoutine());
+        if(coroutine != null)
+        {
+            StopCoroutine(coroutine);
+        }
+        coroutine = StartCoroutine(PlacementRoutine(callback));
     }
 
-    private IEnumerator PlacementRoutine()
+    private IEnumerator PlacementRoutine(System.Action<bool> callback)
     {
+        bool placementSuccess = false;
+
         while (true)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -28,13 +35,21 @@ public class PlacementManager : Singleton<PlacementManager>
                 if (Input.GetMouseButtonDown(0) && CanPlace())
                 {
                     Instantiate(prefab, previewObj.transform.position, Quaternion.identity);
-                    break; // 루프 종료 → 설치 완료
+                    placementSuccess = true;
+                    break;
+                }
+
+                if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
+                {
+                    placementSuccess = false;
+                    break;
                 }
             }
-            yield return null; // 다음 프레임까지 대기
+            yield return null;
         }
 
         StopPlacement();
+        callback?.Invoke(placementSuccess); // 성공 여부 전달
     }
 
     private Vector3 SnapToGrid(Vector3 pos)
@@ -54,6 +69,7 @@ public class PlacementManager : Singleton<PlacementManager>
 
     public void StopPlacement()
     {
+        StopCoroutine(coroutine);
         isPlacing = false;
         if (previewObj != null) Destroy(previewObj);
     }
