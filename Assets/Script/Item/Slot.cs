@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -57,7 +58,10 @@ public class Slot : MonoBehaviour
     /// </summary>
     public void Use()
     {
+        Debug.Log(item);
+        Debug.Log(item.currentCount);
         if (item == null || item.currentCount <= 0) return;
+        Debug.Log("Use");
         PlacementManager.Instance.StartPlacement(item.prefab, OnPlacementResult);
     }
 
