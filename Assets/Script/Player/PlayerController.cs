@@ -98,7 +98,7 @@ public class PlayerController : MonoBehaviour
         animator.SetBool("isRun", isRunning);
         animator.SetFloat("xDir", moveX);
         animator.SetFloat("yDir", -moveZ);
-
+   
         if (isGrounded && animator.GetBool("isJump"))
             animator.SetBool("isJump", false);
     }
