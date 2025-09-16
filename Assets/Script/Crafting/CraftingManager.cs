@@ -1,31 +1,29 @@
 using UnityEngine;
 
-public class CraftingManager : MonoBehaviour
+public class CraftingManager : Singleton<CraftingManager>
 {
-    public Inventory inventory;
-
-    public bool Craft(CraftingRecipe recipe)
+  
+    public void Craft(CraftingRecipe recipe)
     {
         // 재료 체크
-        foreach (var item in recipe.ingredients)
+        foreach (var ingredients in recipe.ingredients)
         {
-            if (!inventory.HasItem(item.id, 1)) // 필요한 수량은 item에 정의
+            if (!SlotManager.Instance.inventory.HasItem(ingredients.item.id, ingredients.count)) // 필요한 수량은 item에 정의
             {
                 Debug.Log("재료 부족!");
-                return false;
+            
             }
         }
 
         // 재료 차감
-        foreach (var item in recipe.ingredients)
+        foreach (var ingredients in recipe.ingredients)
         {
-            inventory.RemoveItem(item.id, 1);
+            SlotManager.Instance.inventory.RemoveItem(ingredients.item.id, ingredients.count);
         }
-
+       
         // 결과물 지급
-        inventory.AddItem(recipe.resultItem.id, recipe.resultCount);
-        Debug.Log(recipe.resultItem.id + " 제작 완료!");
+        SlotManager.Instance.inventory.AddItem(recipe.resultItem, recipe.resultCount);
 
-        return true;
+       
     }
 }

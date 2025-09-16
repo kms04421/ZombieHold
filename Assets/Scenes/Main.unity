@@ -5880,7 +5880,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 0}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 123449500}
+        m_TargetAssemblyTypeName: TabBarController, Assembly-CSharp
+        m_MethodName: CraftingOnClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &166245123 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4000012097295612, guid: 4944c29dadd7e02468c053eafe48e485, type: 3}
@@ -15285,6 +15297,50 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4000013149834228, guid: 6857ff1d3761e21479727f3b27cc8f68, type: 3}
   m_PrefabInstance: {fileID: 501632853}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &502544167
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 502544169}
+  - component: {fileID: 502544168}
+  m_Layer: 0
+  m_Name: CraftingManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &502544168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 502544167}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 670dc1e4f2a385242aec819d653bb4ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &502544169
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 502544167}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 461.0718, y: 303.39536, z: -180.19928}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &505093254
 GameObject:
   m_ObjectHideFlags: 0
@@ -37781,6 +37837,7 @@ MonoBehaviour:
   image: {fileID: 894846054}
   coolTime: {fileID: 1959966115}
   currnetCountText: {fileID: 323026974}
+  _currentCount: 0
 --- !u!114 &1414609549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -55059,11 +55116,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5829029814123194432, guid: 28fa61ca54aefa84fae6ad5900d17cb6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -192.38824
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5829029814123194432, guid: 28fa61ca54aefa84fae6ad5900d17cb6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 155.24646
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5829029814123194432, guid: 28fa61ca54aefa84fae6ad5900d17cb6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -55106,6 +55163,18 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6487497693138368859, guid: 28fa61ca54aefa84fae6ad5900d17cb6, type: 3}
+      propertyPath: Activate
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6487497693138368859, guid: 28fa61ca54aefa84fae6ad5900d17cb6, type: 3}
+      propertyPath: CraftingRecipe
+      value: 
+      objectReference: {fileID: 11400000, guid: b0648d40e58bedf4799115e85837d509, type: 2}
+    - target: {fileID: 6487497693138368859, guid: 28fa61ca54aefa84fae6ad5900d17cb6, type: 3}
+      propertyPath: craftingRecipe
+      value: 
+      objectReference: {fileID: 11400000, guid: b0648d40e58bedf4799115e85837d509, type: 2}
+    - target: {fileID: 6487497693138368859, guid: 28fa61ca54aefa84fae6ad5900d17cb6, type: 3}
       propertyPath: tabBarController
       value: 
       objectReference: {fileID: 123449500}
@@ -55135,3 +55204,4 @@ SceneRoots:
   - {fileID: 208757997}
   - {fileID: 483579742}
   - {fileID: 480981756}
+  - {fileID: 502544169}

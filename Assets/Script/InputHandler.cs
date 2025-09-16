@@ -35,7 +35,7 @@ public class InputHandler : MonoBehaviour
         if (context.performed)
         {
             int nextIndex = 1; // ¸¶¿ì½º ÈÙ µî
-            SlotManager.Instance.SwitchSlot(nextIndex);
+         //   SlotManager.Instance.SwitchSlot(nextIndex);
         }
     }
     public void Shoot(RecoilController weaponRecoil)

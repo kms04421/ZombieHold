@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,25 +17,36 @@ public class Slot : MonoBehaviour
 
     [Header("현재 개수")]
     public TextMeshProUGUI currnetCountText;
+
+
     private void Start()
     {
         if (test != null)
         {
-            SetSlot(test);
+            SetSlot(test, 2);
 
         }
     }
+
     /// <summary>
     /// 아이템 정보 슬롯에 Setting
     /// </summary>
     /// <param name="item"></param>
-    public void SetSlot(Item _item)
+    public void SetSlot(Item _item, int testCount = 0)
     {
         item = _item;
         image.gameObject.SetActive(true);
         image.sprite = item.icon;
         //tset
-        item.currentCount = 2;
+        if (testCount > 0)
+        {
+            item.currentCount = 2;
+        
+        }
+        else
+        {
+            item.currentCount = _item.currentCount;
+        }
         //test
         currnetCountText.text = item.currentCount.ToString();
     }
@@ -44,7 +54,7 @@ public class Slot : MonoBehaviour
     /// <summary>
     /// 슬롯정보 초기화
     /// </summary>
-    private void InitSlot()
+    public void InitSlot()
     {
         item = null;
         image.sprite = null;
@@ -61,7 +71,7 @@ public class Slot : MonoBehaviour
         Debug.Log(item);
         Debug.Log(item.currentCount);
         if (item == null || item.currentCount <= 0) return;
-        Debug.Log("Use");
+
         PlacementManager.Instance.StartPlacement(item.prefab, OnPlacementResult);
     }
 
@@ -69,17 +79,18 @@ public class Slot : MonoBehaviour
     private void OnPlacementResult(bool success)
     {
         if (!success) return; // 설치 취소하면 아무 것도 안 함
-        RemoveSlot(); // 슬롯 초기화
+        RemoveSlot(); // 슬롯 갯수차감
 
     }
     /// <summary>
-    /// 슬롯 카운터 제거
+    /// 슬롯 카운터 감소, 제거
     /// </summary>
-    private void RemoveSlot()
+    public void RemoveSlot(int count =1)
     {
-        if (item.currentCount > 1)
-        {
-            item.currentCount--;
+        Debug.Log(item.currentCount);
+        item.currentCount -= count;
+        if (item.currentCount > 0)
+        {       
             currnetCountText.text = item.currentCount.ToString();
         }
         else
