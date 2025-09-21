@@ -2,12 +2,23 @@ using UnityEngine;
 using System.Collections;
 public class PlacementManager : Singleton<PlacementManager>
 {
-    public GameObject prefab;        // 설치할 오브젝트
+    [Header("설치할 오브젝트 프리펩")]
+    public GameObject prefab;        // 설치할 오브젝트 보관용
+
+    [Header("설치 환경 설정")]
+    public float maxDistance = 5f;  // 설치 거리
+    public LayerMask placementMask; // 설치할 레이어
+    public bool isPlacing= false; // 설치 중인지 여부
+
     private GameObject previewObj;   // 미리보기
-    public float maxDistance = 5f;
-    public bool isPlacing= false;
-    public LayerMask placementMask;
-    private Coroutine coroutine;
+
+    private Coroutine coroutine; //코루틴 저장용
+
+    /// <summary>
+    /// 설치 시작 
+    /// </summary>
+    /// <param name="newPrefab"> 설치할 오브젝트</param>
+    /// <param name="callback"> 설치가 완료 되었는지 확인하는 함수 변수로 보냄</param>
     public void StartPlacement(GameObject newPrefab, System.Action<bool> callback)
     {
         prefab = newPrefab;
@@ -21,6 +32,11 @@ public class PlacementManager : Singleton<PlacementManager>
         coroutine = StartCoroutine(PlacementRoutine(callback));
     }
 
+    /// <summary>
+    /// 설치 코루틴 
+    /// </summary>
+    /// <param name="callback">설치가 완료 되었는지 확인하는 함수 변수로 보냄</param>
+    /// <returns></returns>
     private IEnumerator PlacementRoutine(System.Action<bool> callback)
     {
         bool placementSuccess = false;
@@ -52,6 +68,11 @@ public class PlacementManager : Singleton<PlacementManager>
         callback?.Invoke(placementSuccess); // 성공 여부 전달
     }
 
+    /// <summary>
+    /// 소수점 위치를 정수로 변환
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <returns></returns>
     private Vector3 SnapToGrid(Vector3 pos)
     {
         return new Vector3(
@@ -66,7 +87,9 @@ public class PlacementManager : Singleton<PlacementManager>
         // 여기에 충돌 검사, 자원 체크 등 넣기
         return true;
     }
-
+    /// <summary>
+    /// 설치 취소
+    /// </summary>
     public void StopPlacement()
     {
         StopCoroutine(coroutine);

@@ -4,6 +4,9 @@ public class ZombieLootDrop : MonoBehaviour
 {
     public LootTable lootTable;
 
+    /// <summary>
+    /// 아이템 드랍 함수
+    /// </summary>
     public void DropLoot()
     {
         if (lootTable == null) return;

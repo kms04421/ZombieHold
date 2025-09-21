@@ -1,8 +1,9 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Slot : MonoBehaviour
+public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
 {
     public Item test;
 
@@ -18,6 +19,8 @@ public class Slot : MonoBehaviour
     [Header("현재 개수")]
     public TextMeshProUGUI currnetCountText;
 
+    private Canvas canvas;
+    private Transform originalParent;
 
     private void Start()
     {
@@ -26,6 +29,7 @@ public class Slot : MonoBehaviour
             SetSlot(test, 2);
 
         }
+        originalParent = transform;
     }
 
     /// <summary>
@@ -34,6 +38,7 @@ public class Slot : MonoBehaviour
     /// <param name="item"></param>
     public void SetSlot(Item _item, int testCount = 0)
     {
+        if (_item == null) return;
         item = _item;
         image.gameObject.SetActive(true);
         image.sprite = item.icon;
@@ -68,8 +73,7 @@ public class Slot : MonoBehaviour
     /// </summary>
     public void Use()
     {
-        Debug.Log(item);
-        Debug.Log(item.currentCount);
+        Debug.Log("Use");
         if (item == null || item.currentCount <= 0) return;
 
         PlacementManager.Instance.StartPlacement(item.prefab, OnPlacementResult);
@@ -78,6 +82,7 @@ public class Slot : MonoBehaviour
     // 설치 결과 처리
     private void OnPlacementResult(bool success)
     {
+        Debug.Log("OnPlacementResult");
         if (!success) return; // 설치 취소하면 아무 것도 안 함
         RemoveSlot(); // 슬롯 갯수차감
 
@@ -87,7 +92,7 @@ public class Slot : MonoBehaviour
     /// </summary>
     public void RemoveSlot(int count =1)
     {
-        Debug.Log(item.currentCount);
+        Debug.Log("RemoveSlot");
         item.currentCount -= count;
         if (item.currentCount > 0)
         {       
@@ -96,6 +101,45 @@ public class Slot : MonoBehaviour
         else
         {
             InitSlot();
+        }
+    }
+
+    // --- 드래그 앤 드롭 ---
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        if (item == null) return;
+       
+        image.raycastTarget = false; // 드래그 중엔 다른 슬롯이 이벤트 받게 하기
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (item == null) return;
+        image.transform.position = eventData.position;
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (item == null) return;
+        image.transform.SetParent(originalParent);
+        image.transform.localPosition = Vector3.zero;
+        image.raycastTarget = true;
+    }
+
+    public void OnDrop(PointerEventData eventData)
+    {
+        Debug.Log("OnDrop");
+        Slot fromSlot = eventData.pointerDrag?.GetComponent<Slot>();
+        if (fromSlot != null && fromSlot != this)
+        {
+            // 아이템 스왑
+            Item temp = this.item;
+            this.SetSlot(fromSlot.item, fromSlot.item?.currentCount ?? 0);
+
+            if (temp != null)
+                fromSlot.SetSlot(temp, temp.currentCount);
+            else
+                fromSlot.InitSlot();
         }
     }
 }

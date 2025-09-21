@@ -4,7 +4,13 @@ public class TabBarController : MonoBehaviour
 {
     [SerializeField] private GameObject tabBar;
     private CraftingRecipe craftingRecipe;
-    // 슬롯 클릭 시 호출
+
+    /// <summary>
+    /// 텝바 활성화
+    /// </summary>
+    /// <param name="slotTransform"> 클릭한 슬롯의 RectTransform정보</param>
+    /// <param name="_craftingRecipe">제작 스크립터블 오브젝트 정보</param>
+    /// <param name="yOffset">텝바 호출시 y좌표 위치 </param>
     public void ShowTabBar(RectTransform slotTransform, CraftingRecipe _craftingRecipe, float yOffset = -50f)
     {
         tabBar.SetActive(true);
@@ -21,12 +27,18 @@ public class TabBarController : MonoBehaviour
         tabRect.position = newPos;
     }
 
+    /// <summary>
+    /// 텝바 비활성화
+    /// </summary>
     public void HideTabBar()
     {
         tabBar.SetActive(false);
         craftingRecipe = null;
     }
 
+    /// <summary>
+    /// 제작 템바 버튼 클릭시
+    /// </summary>
     public void CraftingOnClick()
     {
         if (craftingRecipe != null) 

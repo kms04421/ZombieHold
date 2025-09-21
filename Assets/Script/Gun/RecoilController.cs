@@ -15,7 +15,9 @@ public class RecoilController : MonoBehaviour
     {
         originalRotation = recoilTarget.localRotation;
     }
-
+    /// <summary>
+    /// 총기 반동 시작
+    /// </summary>
     public void PlayRecoil()
     {
         if (recoilCoroutine != null)
@@ -23,7 +25,10 @@ public class RecoilController : MonoBehaviour
 
         recoilCoroutine = StartCoroutine(RecoilRoutine());
     }
-
+    /// <summary>
+    /// 총기반동 코루틴
+    /// </summary>
+    /// <returns></returns>
     IEnumerator RecoilRoutine()
     {
         // 위로 튀는 반동

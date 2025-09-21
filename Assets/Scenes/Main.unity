@@ -7193,6 +7193,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotPrefab: {fileID: 6277508032332044602, guid: 19740bf02dad4ff42b520c818780837f, type: 3}
   slotParent: {fileID: 1566396588}
+  inventory: {fileID: 0}
   uiSlots:
   - {fileID: 1414609548}
 --- !u!4 &208757997
@@ -30561,10 +30562,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 0}
   maxDistance: 5
-  isPlacing: 0
   placementMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  isPlacing: 0
 --- !u!4 &1138594237 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4000013615273972, guid: 01fd6d8578da5054c80273c1d59d2cf9, type: 3}
@@ -37837,7 +37838,6 @@ MonoBehaviour:
   image: {fileID: 894846054}
   coolTime: {fileID: 1959966115}
   currnetCountText: {fileID: 323026974}
-  _currentCount: 0
 --- !u!114 &1414609549
 MonoBehaviour:
   m_ObjectHideFlags: 0

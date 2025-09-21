@@ -4,6 +4,10 @@ using UnityEngine.InputSystem.Controls;
 
 public class InputHandler : MonoBehaviour
 {
+    /// <summary>
+    /// 슬롯 사용 (1~6)까지
+    /// </summary>
+    /// <param name="context"></param>
     public void OnUseSlot(InputAction.CallbackContext context)
     {
         if (!context.performed) return;
@@ -29,8 +33,11 @@ public class InputHandler : MonoBehaviour
             SlotManager.Instance.UseUiSlot(slotIndex);
         }
     }
-
-    public void OnSwitchSlot(InputAction.CallbackContext context)
+    /// <summary>
+    /// 마우스 휠로 사용 슬롯 변경 
+    /// </summary>
+    /// <param name="context"></param>
+    public void OnSwitchSlot(InputAction.CallbackContext context) //아직 미정
     {
         if (context.performed)
         {
@@ -38,6 +45,10 @@ public class InputHandler : MonoBehaviour
          //   SlotManager.Instance.SwitchSlot(nextIndex);
         }
     }
+    /// <summary>
+    /// 총기 발사 아직 반동만있음
+    /// </summary>
+    /// <param name="weaponRecoil"></param>
     public void Shoot(RecoilController weaponRecoil)
     {
         if (weaponRecoil != null)

@@ -16,6 +16,9 @@ public class GunBase : MonoBehaviour
     protected Transform cameraTransform;
     protected GameObject flash;
 
+
+    private float nextFireTime = 0f;
+
     protected virtual void Awake()
     {
         currentAmmo = gunData.maxAmmo;
@@ -23,19 +26,7 @@ public class GunBase : MonoBehaviour
         cameraTransform = Camera.main.transform;
     }
 
-    public virtual void StartFiring()
-    {
-        if (gunData.isFullAuto)
-            isFiring = true;
-        else
-            Shoot();
-    }
-
-    public virtual void StopFiring()
-    {
-        isFiring = false;
-    }
-
+ 
     protected virtual void Update()
     {
         if (gunData.isFullAuto && isFiring && Time.time >= nextFireTime)
@@ -45,8 +36,28 @@ public class GunBase : MonoBehaviour
         }
     }
 
-    private float nextFireTime = 0f;
+    /// <summary>
+    /// 총기 발사전 시작함수 (연발 단발 구분을 위해 사용)
+    /// </summary>
+    public virtual void StartFiring()
+    {
+        if (gunData.isFullAuto)
+            isFiring = true;
+        else
+            Shoot();
+    }
+    /// <summary>
+    /// 총기 발사 종료 함수
+    /// </summary>
+    public virtual void StopFiring()
+    {
+        isFiring = false;
+    }
 
+
+    /// <summary>
+    /// 총기 발사
+    /// </summary>
     public virtual void Shoot()
     {
         if (currentAmmo <= 0) return;
@@ -72,7 +83,10 @@ public class GunBase : MonoBehaviour
 
         currentAmmo--;
     }
-
+    /// <summary>
+    /// 총구 이펙트 효과
+    /// </summary>
+    /// <returns></returns>
     IEnumerator MuzzleFlashCoroutine()
     {
         if(flash == null)
@@ -84,7 +98,9 @@ public class GunBase : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         flash.SetActive(false);
     }
-
+    /// <summary>
+    /// 재장전
+    /// </summary>
     public void Reload()
     {
         currentAmmo = gunData.maxAmmo;

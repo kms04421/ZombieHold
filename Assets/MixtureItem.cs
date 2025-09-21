@@ -12,6 +12,9 @@ public class MixtureItem : MonoBehaviour, IPointerClickHandler
     {
         RectTransform = GetComponent<RectTransform>();
     }
+    /// <summary>
+    /// 제작아이템 활성화 함수
+    /// </summary>
     public void ActivateMixtureItem()
     {
         if (Deactivate != null)
@@ -19,8 +22,12 @@ public class MixtureItem : MonoBehaviour, IPointerClickHandler
 
         Activate = true;
     }
+    /// <summary>
+    /// 제작 슬롯 클릭시 작동 함수
+    /// </summary>
+    /// <param name="eventData"></param>
     public void OnPointerClick(PointerEventData eventData)
     {
-        tabBarController.ShowTabBar(RectTransform , craftingRecipe);
+        tabBarController.ShowTabBar(RectTransform , craftingRecipe); // 텝바 호풀
     }
 }

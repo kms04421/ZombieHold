@@ -13,6 +13,10 @@ public class FrInverseKinematic : MonoBehaviour
         animator = GetComponent<Animator>();
         layerIndex_Weapons = animator.GetLayerIndex("Weapons");
     }
+    /// <summary>
+    /// IK함수 왼손 오른손 총기 설정위치에 고정
+    /// </summary>
+    /// <param name="_layerIndex"></param>
 
     private void OnAnimatorIK(int _layerIndex)
     {
@@ -39,6 +43,10 @@ public class FrInverseKinematic : MonoBehaviour
             animator.SetIKRotation(AvatarIKGoal.RightHand, rightHand.rotation);
         }
     }
+    /// <summary>
+    /// IK활성화 비활성화
+    /// </summary>
+    /// <param name="active"></param>
     public void SetIKActive(bool active)
     {
         enableIK = active;

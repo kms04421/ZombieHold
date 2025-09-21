@@ -31,7 +31,10 @@ public class AttackBox : MonoBehaviour
             waitExitCoroutine = StartCoroutine(WaitForAttackEndAndChangeState());
         }
     }
-
+    /// <summary>
+    /// 공격 애니메이션 종료까지 기다리고 상태 변경
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator WaitForAttackEndAndChangeState()
     {
         AnimatorStateInfo stateInfo = Zombie.Animator.GetCurrentAnimatorStateInfo(0);

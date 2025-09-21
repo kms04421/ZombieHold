@@ -8,7 +8,10 @@ public class HitBox : MonoBehaviour
     public Zombie.HitType part;
 
     public Zombie zombie; // 본체 참조
-
+    /// <summary>
+    /// 총기 명중 부위에 따라 데미지 적용함수
+    /// </summary>
+    /// <param name="baseDamage"></param>
     public void OnHit(float baseDamage)
     {
         float finalDamage = baseDamage;

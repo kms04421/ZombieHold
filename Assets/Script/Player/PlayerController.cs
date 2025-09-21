@@ -48,7 +48,10 @@ public class PlayerController : MonoBehaviour
         currentState.HandleInput();
         currentState.UpdateState();
     }
-
+    /// <summary>
+    /// 상태 변경
+    /// </summary>
+    /// <param name="newState"></param>
     public void ChangeState(IPlayerState newState)
     {
         currentState?.Exit();
@@ -114,12 +117,19 @@ public class PlayerController : MonoBehaviour
         cameraTransform.localRotation = Quaternion.Euler(PlayerStateData.xRotation, 0f, 0f);
         transform.Rotate(Vector3.up * mouseX);
     }
-
+    /// <summary>
+    /// 캐릭터 컨트롤로 활성화 비활성화 여부
+    /// </summary>
+    /// <param name="enable"></param>
     public void EnableMovement(bool enable)
     {
         controller.enabled = enable;
     }
     #endregion
+    /// <summary>
+    /// 무기 장착 
+    /// </summary>
+    /// <param name="go"></param>
     public void SetWeapon(GameObject go)
     {
         if(go != null)
@@ -137,7 +147,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// 재장전 애니메이션 실행
+    /// </summary>
     public void Reload()
     {
         // IK 끄기
@@ -149,12 +161,20 @@ public class PlayerController : MonoBehaviour
         // 코루틴으로 일정 시간 후 다시 IK 켜기 (애니메이션 길이에 맞춰 조절)
         StartCoroutine(RestoreIKAfterDelay(3.5f));
     }
-
+    /// <summary>
+    /// 일정시간후 ik활성화
+    /// </summary>
+    /// <param name="delay"></param>
+    /// <returns></returns>
     private IEnumerator RestoreIKAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
         GetComponent<FrInverseKinematic>().SetIKActive(true);
     }
+    /// <summary>
+    /// 캐릭터가 총기 발사 실행 인풋시스템 사용
+    /// </summary>
+    /// <param name="context"></param>
     public void OnFire(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -162,13 +182,19 @@ public class PlayerController : MonoBehaviour
         else if (context.canceled)
             currentGun?.StopFiring();
     }
-
+    /// <summary>
+    /// 재장전 인풋시스템 사용
+    /// </summary>
+    /// <param name="context"></param>
     public void OnReload(InputAction.CallbackContext context)
     {
         if (context.performed)
             currentGun?.Reload();
     }
-
+    /// <summary>
+    /// 총기 변경
+    /// </summary>
+    /// <param name="newGun"></param>
     public void EquipGun(GunBase newGun)
     {
         if (currentGun != null)

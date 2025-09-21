@@ -2,7 +2,10 @@ using UnityEngine;
 
 public class CraftingManager : Singleton<CraftingManager>
 {
-  
+  /// <summary>
+  /// 아이템 제작 함수
+  /// </summary>
+  /// <param name="recipe"></param>
     public void Craft(CraftingRecipe recipe)
     {
         // 재료 체크
