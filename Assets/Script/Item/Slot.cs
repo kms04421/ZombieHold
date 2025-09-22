@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
+public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
 {
     public Item test;
 
@@ -19,9 +19,7 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
     [Header("현재 개수")]
     public TextMeshProUGUI currnetCountText;
 
-    private Canvas canvas;
-    private Transform originalParent;
-
+    private Transform orgTransform;
     private void Start()
     {
         if (test != null)
@@ -29,7 +27,6 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
             SetSlot(test, 2);
 
         }
-        originalParent = transform;
     }
 
     /// <summary>
@@ -69,6 +66,18 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     }
     /// <summary>
+    /// 주어진 item 정보를 기반으로 업데이트
+    /// </summary>
+    private void UpdateSlot()
+    {
+        if(item != null)
+        {
+   
+            currnetCountText.text = item.currentCount.ToString();
+
+        }
+    }
+    /// <summary>
     /// 슬롯 사용
     /// </summary>
     public void Use()
@@ -92,7 +101,6 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
     /// </summary>
     public void RemoveSlot(int count =1)
     {
-        Debug.Log("RemoveSlot");
         item.currentCount -= count;
         if (item.currentCount > 0)
         {       
@@ -108,8 +116,10 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (item == null) return;
-       
-        image.raycastTarget = false; // 드래그 중엔 다른 슬롯이 이벤트 받게 하기
+        orgTransform = transform;
+        Debug.Log(orgTransform);
+        image.transform.SetParent(transform.parent.parent); // Canvas 최상단으로 빼기
+        image.raycastTarget = false;
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -118,28 +128,48 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         image.transform.position = eventData.position;
     }
 
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        if (item == null) return;
-        image.transform.SetParent(originalParent);
-        image.transform.localPosition = Vector3.zero;
-        image.raycastTarget = true;
-    }
-
     public void OnDrop(PointerEventData eventData)
     {
-        Debug.Log("OnDrop");
         Slot fromSlot = eventData.pointerDrag?.GetComponent<Slot>();
         if (fromSlot != null && fromSlot != this)
         {
-            // 아이템 스왑
-            Item temp = this.item;
-            this.SetSlot(fromSlot.item, fromSlot.item?.currentCount ?? 0);
-
-            if (temp != null)
-                fromSlot.SetSlot(temp, temp.currentCount);
+            if(fromSlot.item != null && item != null  && fromSlot.item.id == item.id)
+            {
+                int total = fromSlot.item.currentCount + item.currentCount;
+                if(total > fromSlot.item.maxStack)
+                {
+                    Debug.Log("?");
+                    fromSlot.item.currentCount = fromSlot.item.maxStack;
+                    item.currentCount = total  - item.maxStack;
+                    fromSlot.UpdateSlot();
+                    UpdateSlot();
+                }
+                else
+                {
+                    fromSlot.item.currentCount = total;
+                    InitSlot();
+                }
+            }
             else
-                fromSlot.InitSlot();
+            {    
+                // 아이템 스왑
+                Item temp = this.item;
+                this.SetSlot(fromSlot.item, fromSlot.item?.currentCount ?? 0);
+
+                if (temp != null)
+                    fromSlot.SetSlot(temp, temp.currentCount);
+                else
+                    fromSlot.InitSlot();
+
+            }
+            //위치 정보 초기화
+            fromSlot.image.transform.SetParent(fromSlot.transform);
+            image.transform.SetParent(transform);
+            fromSlot.image.transform.localPosition = Vector3.zero;
+            image.transform.localPosition = Vector3.zero;
+            //위치 정보 초기화
+            image.raycastTarget = true;
         }
+       
     }
 }

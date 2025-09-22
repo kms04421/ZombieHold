@@ -4,6 +4,7 @@ using UnityEngine.InputSystem.Controls;
 
 public class InputHandler : MonoBehaviour
 {
+    public Interactable interactable;
     /// <summary>
     /// 슬롯 사용 (1~6)까지
     /// </summary>
@@ -45,6 +46,13 @@ public class InputHandler : MonoBehaviour
          //   SlotManager.Instance.SwitchSlot(nextIndex);
         }
     }
+    
+    public void StartInteract()
+    {
+        if (interactable == null) return;
+        interactable.StartInteract();
+    }
+
     /// <summary>
     /// 총기 발사 아직 반동만있음
     /// </summary>
