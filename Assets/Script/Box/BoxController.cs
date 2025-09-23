@@ -1,32 +1,43 @@
-using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
+using UnityEngine;
 public class BoxController : Interactable
 {
     private Animation anim;
     public GameObject MiniGame;
     [Header("상호작용 설정")]
-    public float interactTime = 15f; // 몇 초 동안 버튼 눌러야 열리는지
     private Coroutine interactCoroutine;
-    
-
+    public bool Success = false;
+    private MiniGameController miniGameController;
+    [SerializeField]private int[] answerNumbers;
     private void Awake()
     {
         anim = GetComponent<Animation>();
+        miniGameController = MiniGame.GetComponent<MiniGameController>();
     }
-
+    private void Start()
+    {
+        answerNumbers = miniGameController.newAnswerNumbers();
+        miniGameController.SetAnswerNumber(answerNumbers);
+    }
     private IEnumerator InteractRoutine()
     {
-        float currentTime = 0f;
-        Debug.Log("작동");
-        MiniGame.gameObject.SetActive(true);
-        while (currentTime < interactTime)
+        if(Success)
         {
-           
-            // 버튼이 계속 눌러져있다고 가정 (외부에서 StopInteract 호출하면 종료)
-            currentTime += Time.deltaTime;
+            yield break;
+        }
+        MiniGame.gameObject.SetActive(true);
+        while (MiniGame.gameObject.activeSelf)
+        {
+            if (miniGameController.isSuccess)
+            {
+                Success = true;
+                OpenBox();
+                MiniGame.gameObject.SetActive(false);
+                break;
+            }
             yield return null;
         }
-        OpenBox();
         interactCoroutine = null;
     }
 
@@ -52,7 +63,7 @@ public class BoxController : Interactable
         if (other.CompareTag("Player"))
         {
             inputHandler.interactable = this;
-        }    
+        }
     }
     private void OnTriggerExit(Collider other)
     {
