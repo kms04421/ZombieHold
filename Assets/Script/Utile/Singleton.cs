@@ -16,8 +16,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
                 _instance = FindObjectOfType<T>();
                 if (_instance == null)
                 {
-                    GameObject obj = new GameObject();
-                    _instance = obj.AddComponent<T>();
+                    Debug.LogError($"{typeof(T)} 인스턴스가 씬에 없습니다!");
                 }
             }
             return _instance;

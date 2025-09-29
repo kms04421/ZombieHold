@@ -1,18 +1,33 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
-
-public class MiniGameController : MonoBehaviour
+public class MiniGameController : Singleton<MiniGameController>
 {
+    [Header("상태 변환용 플레이어 컨트롤러")]
     [SerializeField] private PlayerController player;
-    [SerializeField] private MiniGameUI gameUI;
-    private int[] numbers;
-    [SerializeField] private int numberCount;
+    [Header("미니게임Ui")]
+    [SerializeField] private MiniGameUI miniGameUI;
+    [Header("문제 정답 (확인용)")]
     [SerializeField] private int[] answerNumbers;
-    [SerializeField] public bool isSuccess = false;
+    [Header("현재 상태")]
+    public bool isWaiting = false;
+    [Header("보상 지급 스크립트")]
+    [SerializeField] private CompensationInventory compensation;
+    //비밀번호 게임용 
+    private int[] numbers; //현재 입력 배열
+    private const int numberCount = 4; // 최대 입력수
+    //비밀번호 게임용 end
+    private Action onSuccessCallback; //성공 메서드 캐싱용
     private void Start()
     {
         numbers = new int[numberCount];       
-        Init();
+        ResetPasswordGame();
     }
+    #region 비밀번호 정답 맞추기 게임
+    /// <summary>
+    /// 새로운 정답 번호를 부여
+    /// </summary>
+    /// <returns></returns>
     public int[] newAnswerNumbers()
     {
         int[] newNumbers = new int[numberCount];
@@ -24,10 +39,9 @@ public class MiniGameController : MonoBehaviour
         }
         return newNumbers;
     }
-    public void SetAnswerNumber(int[] ary)
-    {
-        answerNumbers = ary;
-    }
+    /// <summary>
+    /// 숫자게임 정답과 일치하는지 비교 
+    /// </summary>
     private void ChkAnswer()
     {
         int AnswerCount = numberCount;
@@ -35,51 +49,53 @@ public class MiniGameController : MonoBehaviour
         {
             if (answerNumbers[i] != numbers[i])
             {
-                gameUI.MiniGamesUi[i].image.color = Color.red;
+                miniGameUI.MiniGamesUi[i].image.color = Color.red;
             }
             else
             {
-                gameUI.MiniGamesUi[i].image.color = Color.blue;
+                miniGameUI.MiniGamesUi[i].image.color = Color.blue;
                 AnswerCount--;
             }
         }
         if(AnswerCount != 0)
         {
-            Init();
+            Debug.Log("ChkAnswer");
+            isWaiting = true;
+            Invoke("ResetPasswordGame",1f);
         }
-        else
+        else // 성공(나중에 메서드로)
         {
-            isSuccess = true;
+            SuccessMiniGame(0);
+            ResetPasswordGame();
         }
     }
-    private void Init()
+    /// <summary>
+    /// 비밀번호 게임 초기화
+    /// </summary>
+    private void ResetPasswordGame()
     {
         for (int i = 0; i < numberCount; i++)
         {
-            numbers[i] = -1; 
+            numbers[i] = -1;
+            miniGameUI.SetText(i, -1);
         }
+        isWaiting = false;
     }
-    private void OnEnable()
-    {
-        player.ChangeState(new MenuState(player));
-    }
-
-    private void OnDisable()
-    {
-        player.ChangeState(new NormalState(player));
-    }
-
+    /// <summary>
+    /// 클릭한 버튼의 값을 받아 순서대로 칸채우기
+    /// </summary>
+    /// <param name="num">받은 값</param>
     public void SetBtnNumber(int num)
     {
+        if (isWaiting) return;
         for (int i = 0; i < numberCount; i++)
         {
             if (numbers[i] == -1)
             {
                 numbers[i] = num;
-                gameUI.SetText(i, num);
+                miniGameUI.SetText(i, num);
                 if (i == 3)
-                {
-                    Debug.Log(i);
+                { 
                     ChkAnswer();
                     break;
                 }
@@ -88,4 +104,59 @@ public class MiniGameController : MonoBehaviour
         }
         
     }
+
+    #endregion
+
+    /// <summary>
+    ///  게임 성공 메서드 
+    /// </summary>
+    public void SuccessMiniGame(int index)
+    {
+        isWaiting = false;
+        miniGameUI.HideMiniGame(index);
+        player.ChangeState(new InventoryState(player));
+        onSuccessCallback?.Invoke();       
+    }
+    /// <summary>
+    /// 미니게임 요청받는 메서드(비밀번호 맞추기)
+    /// </summary>
+    /// <param name="ary">정답 배열</param>
+    /// <param name="onSuccess">성공메서드 캐싱용</param>
+    public void RequestMiniGame(int[] ary, Action onSuccess)
+    {
+        player.ChangeState(new MenuState(player));
+        answerNumbers = ary;
+        miniGameUI.ShowMiniGame(0);
+        onSuccessCallback = onSuccess;
+
+    }
+    /// <summary>
+    /// 게임 성공보상 활성화
+    /// </summary>
+    /// <param name="isbool"></param>
+    public void OnCompensation(List<Item> items)
+    {
+        compensation.AddItems(items);
+        compensation.gameObject.SetActive(true);
+    }
+    /// <summary>
+    /// 게임 성공보상 비활성화
+    /// </summary>
+    /// <param name="isbool"></param>
+    public void OffCompensation()
+    {
+        //compensation.AddItem(items);
+        compensation.gameObject.SetActive(false);
+    }
+    /// <summary>
+    /// 미니게임창 닫기 
+    /// </summary>
+    /// <param name="index"></param>
+    public void MiniGameExit(int index)
+    {
+        ResetPasswordGame();
+        miniGameUI.HideMiniGame(index);
+        player.ChangeState(new NormalState(player));
+    }
+
 }

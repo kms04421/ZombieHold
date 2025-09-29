@@ -24,7 +24,7 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
     {
         if (test != null)
         {
-            SetSlot(test, 2);
+            SetSlot(test);
 
         }
     }
@@ -33,24 +33,31 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
     /// 아이템 정보 슬롯에 Setting
     /// </summary>
     /// <param name="item"></param>
-    public void SetSlot(Item _item, int testCount = 0)
+    public void SetSlot(Item _item)
     {
         if (_item == null) return;
         item = _item;
         image.gameObject.SetActive(true);
         image.sprite = item.icon;
-        //tset
-        if (testCount > 0)
-        {
-            item.currentCount = 2;
+       
+        AddSlot(_item.currentCount);
         
-        }
-        else
-        {
-            item.currentCount = _item.currentCount;
-        }
         //test
         currnetCountText.text = item.currentCount.ToString();
+    }
+    /// <summary>
+    /// 아이템 수량추가
+    /// </summary>
+    /// <param name="i"></param>
+    public void AddSlot(int i)
+    {
+        int total = i + item.currentCount;
+        if(total > item.maxStack)
+        {
+            item.currentCount = item.maxStack;
+        }
+        
+        UpdateSlot();
     }
 
     /// <summary>
@@ -82,7 +89,6 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
     /// </summary>
     public void Use()
     {
-        Debug.Log("Use");
         if (item == null || item.currentCount <= 0) return;
 
         PlacementManager.Instance.StartPlacement(item.prefab, OnPlacementResult);
@@ -117,7 +123,6 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
     {
         if (item == null) return;
         orgTransform = transform;
-        Debug.Log(orgTransform);
         image.transform.SetParent(transform.parent.parent); // Canvas 최상단으로 빼기
         image.raycastTarget = false;
     }
@@ -138,7 +143,6 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
                 int total = fromSlot.item.currentCount + item.currentCount;
                 if(total > fromSlot.item.maxStack)
                 {
-                    Debug.Log("?");
                     fromSlot.item.currentCount = fromSlot.item.maxStack;
                     item.currentCount = total  - item.maxStack;
                     fromSlot.UpdateSlot();
@@ -146,18 +150,20 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
                 }
                 else
                 {
-                    fromSlot.item.currentCount = total;
-                    InitSlot();
+                    item.currentCount = total;
+                    UpdateSlot();
+                    fromSlot.InitSlot();
+
                 }
             }
             else
             {    
                 // 아이템 스왑
                 Item temp = this.item;
-                this.SetSlot(fromSlot.item, fromSlot.item?.currentCount ?? 0);
+                this.SetSlot(fromSlot.item);
 
                 if (temp != null)
-                    fromSlot.SetSlot(temp, temp.currentCount);
+                    fromSlot.SetSlot(temp);
                 else
                     fromSlot.InitSlot();
 

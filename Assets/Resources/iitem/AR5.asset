@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa4e800cca32463489d712c9aee3ccc7, type: 3}
   m_Name: AR5
   m_EditorClassIdentifier: 
-  id: 02
+  id: 2
   itemName: AR_L
   icon: {fileID: 21300000, guid: e625c4b06c35e4a4bba947a0fca77524, type: 3}
   prefab: {fileID: 639178805255782959, guid: 8095ef38caf3d1f459ef19d91b36d73e, type: 3}

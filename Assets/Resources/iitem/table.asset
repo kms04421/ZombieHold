@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa4e800cca32463489d712c9aee3ccc7, type: 3}
   m_Name: table
   m_EditorClassIdentifier: 
-  id: 01
-  itemName: table
+  id: 1
+  itemName: Table
   icon: {fileID: 21300000, guid: 332ef910fae03284b986f5f8a61c06ce, type: 3}
   prefab: {fileID: 9010612053373108687, guid: 0c13b9c31fd059b468b2f1759c412e61, type: 3}
   stackable: 1
-  maxStack: 99
+  maxStack: 20
+  currentCount: 0
