@@ -5,6 +5,7 @@ using UnityEngine.InputSystem.Controls;
 public class InputHandler : MonoBehaviour
 {
     public Interactable interactable;
+    [SerializeField]private PlayerController playerController;
     /// <summary>
     /// 슬롯 사용 (1~6)까지
     /// </summary>
@@ -57,11 +58,21 @@ public class InputHandler : MonoBehaviour
     /// 총기 발사 아직 반동만있음
     /// </summary>
     /// <param name="weaponRecoil"></param>
-    public void Shoot(RecoilController weaponRecoil)
+    public void Shoot(InputAction.CallbackContext context)
     {
-        if (weaponRecoil != null)
-        {
-            weaponRecoil.PlayRecoil();
-        }
+        if (context.performed)
+            playerController.OnFire(true);
+        else if (context.canceled)
+            playerController.OnFire(false);
+      
+    }
+    /// <summary>
+    /// 총기 재장전
+    /// </summary>
+    /// <param name="contex"></param>
+    public void Reload(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return; // performed 일 때만 실행
+        playerController.OnReload();
     }
 }

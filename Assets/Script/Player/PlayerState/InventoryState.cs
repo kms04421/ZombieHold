@@ -23,7 +23,7 @@ public class InventoryState : IPlayerState
     public void HandleInput()
     {
         if (Input.GetKeyDown(KeyCode.I))
-            player.ChangeState(new NormalState(player));
+            player.ChangeState(player.NormalState);
     }
 
     public void UpdateState() { }

@@ -50,7 +50,7 @@ public class CompensationInventory : MonoBehaviour
                 slot[i].SetSlot(newItem);
                 return true;
             }
-            else if (slot[i].item.id == newItem.id)
+            else if (slot[i].item.template.id == newItem.template.id)
             {
                 slot[i].AddSlot(newItem.currentCount);
             }

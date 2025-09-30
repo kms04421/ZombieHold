@@ -1,13 +1,15 @@
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
 {
-    public Item test;
-
     [Header("아이템 스크리터블 오브젝트")]
+    public ItemSO test;
+
+    [Header("아이템")]
     public Item item;
 
     [Header("이미지 연결")]
@@ -20,15 +22,15 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
     public TextMeshProUGUI currnetCountText;
 
     private Transform orgTransform;
-    private void Start()
+  
+    private void Awake()
     {
         if (test != null)
         {
-            SetSlot(test);
+            SetSlot(new Item(test,test.testCount));
 
         }
     }
-
     /// <summary>
     /// 아이템 정보 슬롯에 Setting
     /// </summary>
@@ -38,7 +40,7 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
         if (_item == null) return;
         item = _item;
         image.gameObject.SetActive(true);
-        image.sprite = item.icon;
+        image.sprite = item.template.icon;
        
         AddSlot(_item.currentCount);
         
@@ -52,9 +54,9 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
     public void AddSlot(int i)
     {
         int total = i + item.currentCount;
-        if(total > item.maxStack)
+        if(total > item.template.maxStack)
         {
-            item.currentCount = item.maxStack;
+            item.currentCount = item.template.maxStack;
         }
         
         UpdateSlot();
@@ -91,7 +93,7 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
     {
         if (item == null || item.currentCount <= 0) return;
 
-        PlacementManager.Instance.StartPlacement(item.prefab, OnPlacementResult);
+        PlacementManager.Instance.StartPlacement(item.template.prefab, OnPlacementResult);
     }
 
     // 설치 결과 처리
@@ -107,15 +109,21 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
     /// </summary>
     public void RemoveSlot(int count =1)
     {
-        item.currentCount -= count;
-        if (item.currentCount > 0)
-        {       
-            currnetCountText.text = item.currentCount.ToString();
-        }
-        else
+
+        if (item.currentCount >= count)
         {
-            InitSlot();
+            item.currentCount -= count;
+            if(item.currentCount == 0)
+            {
+                InitSlot();
+            }
+            else
+            {
+                currnetCountText.text = item.currentCount.ToString();
+            }
+        
         }
+        
     }
 
     // --- 드래그 앤 드롭 ---
@@ -138,13 +146,13 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
         Slot fromSlot = eventData.pointerDrag?.GetComponent<Slot>();
         if (fromSlot != null && fromSlot != this)
         {
-            if(fromSlot.item != null && item != null  && fromSlot.item.id == item.id)
+            if(fromSlot.item != null && item != null  && fromSlot.item.template.id == item.template.id)
             {
                 int total = fromSlot.item.currentCount + item.currentCount;
-                if(total > fromSlot.item.maxStack)
+                if(total > fromSlot.item.template.maxStack)
                 {
-                    fromSlot.item.currentCount = fromSlot.item.maxStack;
-                    item.currentCount = total  - item.maxStack;
+                    fromSlot.item.currentCount = fromSlot.item.template.maxStack;
+                    item.currentCount = total  - item.template.maxStack;
                     fromSlot.UpdateSlot();
                     UpdateSlot();
                 }
@@ -175,6 +183,7 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
             image.transform.localPosition = Vector3.zero;
             //위치 정보 초기화
             image.raycastTarget = true;
+            SlotManager.Instance.SetPlayerUI();
         }
        
     }

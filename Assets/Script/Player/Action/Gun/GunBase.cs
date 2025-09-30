@@ -1,32 +1,56 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Audio;
-using UnityEngine.InputSystem;
+public enum GunType
+{
+    None,
+    AR,
+    SMG,
+    ShotGun
+}
 public class GunBase : MonoBehaviour
 {
     [Header("총 데이터")]
     public GunData gunData;
     [Header("총구 위치")]
-    [SerializeField]private Transform muzzPos;
+    [SerializeField] private Transform muzzPos;
 
-    protected int currentAmmo;
+    private int _currentAmmo; //현재총알 
+    public int CurrentAmmo // 현재 총알
+    {
+        get { return _currentAmmo; }
+        set
+        {
+            _currentAmmo = value;
+        }
+    }
+
+    //총기반동 스크립트
+    public RecoilController recoilController;
+
+    protected PlayerController playerController;
     protected bool isFiring = false;
     protected Coroutine muzzleCoroutine;
     protected AudioSource audioSource;
     protected Transform cameraTransform;
     protected GameObject flash;
-
+    protected Inventory inventory;
 
     private float nextFireTime = 0f;
 
+  
     protected virtual void Awake()
     {
-        currentAmmo = gunData.maxAmmo;
+        CurrentAmmo = gunData.maxAmmo;
         audioSource = GetComponent<AudioSource>();
         cameraTransform = Camera.main.transform;
     }
 
- 
+    protected virtual void Start()
+    {
+        inventory = SlotManager.Instance.inventory;
+        SetGun();
+    }
+
     protected virtual void Update()
     {
         if (gunData.isFullAuto && isFiring && Time.time >= nextFireTime)
@@ -35,7 +59,10 @@ public class GunBase : MonoBehaviour
             nextFireTime = Time.time + gunData.fireRate;
         }
     }
-
+    public void SetPlayerController(PlayerController _playerController)
+    {
+        playerController = _playerController;
+    }
     /// <summary>
     /// 총기 발사전 시작함수 (연발 단발 구분을 위해 사용)
     /// </summary>
@@ -60,7 +87,7 @@ public class GunBase : MonoBehaviour
     /// </summary>
     public virtual void Shoot()
     {
-        if (currentAmmo <= 0) return;
+        if (CurrentAmmo == 0) return;
 
         Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
         if (Physics.Raycast(ray, out RaycastHit hit, gunData.range))
@@ -81,7 +108,8 @@ public class GunBase : MonoBehaviour
         if (audioSource != null && gunData.gunShotClip != null)
             audioSource.PlayOneShot(gunData.gunShotClip);
 
-        currentAmmo--;
+        CurrentAmmo--;
+        playerUI.Instance.SetCurrentAmmo(CurrentAmmo);
     }
     /// <summary>
     /// 총구 이펙트 효과
@@ -89,7 +117,7 @@ public class GunBase : MonoBehaviour
     /// <returns></returns>
     IEnumerator MuzzleFlashCoroutine()
     {
-        if(flash == null)
+        if (flash == null)
         {
             flash = Instantiate(gunData.muzzleFlashPrefab, muzzPos.position, muzzPos.rotation, transform);
         }
@@ -101,9 +129,60 @@ public class GunBase : MonoBehaviour
     /// <summary>
     /// 재장전
     /// </summary>
-    public void Reload()
+    public bool Reload()
     {
-        currentAmmo = gunData.maxAmmo;
+        string ammoID = GetGunAmmoId(gunData.type);
+
+        int total = inventory.HasItemCount(ammoID);   // 인벤토리에 있는 총알 수
+        if(total == 0 || CurrentAmmo == gunData.maxAmmo) return false;
+        int needed = gunData.maxAmmo - CurrentAmmo;   // 탄창을 채우기 위해 필요한 총알 수
+
+        if (total < needed)
+        {
+            // 인벤토리 총알이 부족 → 가진 만큼만 채움
+            CurrentAmmo += total;
+            inventory.RemoveItem(ammoID, total);
+            total = 0;
+        }
+        else
+        {
+            // 인벤토리 총알이 충분 → 탄창 풀로 채움
+            CurrentAmmo = gunData.maxAmmo;
+            inventory.RemoveItem(ammoID, needed);
+            total -= needed;
+        }
+
+        playerUI.Instance.SetCurrentAmmo(CurrentAmmo);
+        playerUI.Instance.SetAllAmmo(total);
+        return true;
     }
 
+    public string GetGunAmmoId(GunType gunType)
+    {
+        switch (gunType)
+        {
+            case GunType.None:
+                break;
+
+            case GunType.ShotGun:
+                break;
+
+            case GunType.AR:
+                return "2_1";
+                
+            case GunType.SMG:
+                break;
+        }
+        return "";
+    }
+
+    public void SetGun()
+    {
+        string ammoID = GetGunAmmoId(gunData.type);
+      
+        int total = inventory.HasItemCount(ammoID);
+     
+        playerUI.Instance.SetCurrentAmmo(CurrentAmmo);
+        playerUI.Instance.SetAllAmmo(total);
+    }
 }

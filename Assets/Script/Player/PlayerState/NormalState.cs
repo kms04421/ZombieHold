@@ -19,9 +19,9 @@ public class NormalState : IPlayerState
     public void HandleInput()
     {
         if (Input.GetKeyDown(KeyCode.I))
-            player.ChangeState(new InventoryState(player));
+            player.ChangeState(player.InventoryState);
         if (Input.GetKeyDown(KeyCode.Escape))
-            player.ChangeState(new MenuState(player));
+            player.ChangeState(player.MenuState);
     }
 
     public void UpdateState()

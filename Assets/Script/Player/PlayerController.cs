@@ -1,13 +1,11 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     [Header("PlayeData")]
     public PlayerData playerData;
     [Header("GunData")]
     public GameObject weapon;
-    public RecoilController weaponRecoil;
 
     [Header("Movement")]
     public float walkSpeed = 3f;
@@ -15,7 +13,8 @@ public class PlayerController : MonoBehaviour
     public float backSpeed = 2f;
     private float jumpForce = 1f;
     public float gravity = -9.81f;
-
+    private float xRecoilOffset = 0f;   // Recoil이 줄 값
+    private float yRecoilOffset = 0f; // 좌우 반동
     [Header("Mouse Look")]
     public Transform cameraTransform;
     public float mouseSensitivity = 2f;
@@ -28,9 +27,15 @@ public class PlayerController : MonoBehaviour
 
     [Header("무기 슬롯")]
     public GunBase currentGun;
-    
+
     private IPlayerState currentState;
 
+    ///상태패턴
+    public IPlayerState NormalState { get; private set; }
+    public IPlayerState InventoryState { get; private set; }
+    public IPlayerState MenuState { get; private set; }
+    ///상태패턴
+    ///
     void Awake()
     {
         playerData = new PlayerData();
@@ -40,7 +45,11 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        ChangeState(new NormalState(this));
+        NormalState = new NormalState(this);
+        InventoryState = new InventoryState(this);
+        MenuState = new MenuState(this);
+        SetWeapon();
+        ChangeState(NormalState);
     }
 
     void Update()
@@ -101,7 +110,7 @@ public class PlayerController : MonoBehaviour
         animator.SetBool("isRun", isRunning);
         animator.SetFloat("xDir", moveX);
         animator.SetFloat("yDir", -moveZ);
-   
+
         if (isGrounded && animator.GetBool("isJump"))
             animator.SetBool("isJump", false);
     }
@@ -111,11 +120,25 @@ public class PlayerController : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-        PlayerStateData.xRotation -= mouseY;
+        // 마우스 Y + 반동 가산
+        PlayerStateData.xRotation -= (mouseY - xRecoilOffset);
+        xRecoilOffset = 0f; // 한 번 적용했으니 초기화
+
         PlayerStateData.xRotation = Mathf.Clamp(PlayerStateData.xRotation, -90f, 90f);
 
+        // 좌우 회전 적용 (마우스 + 반동)
+        float totalYaw = mouseX + yRecoilOffset;
+        transform.Rotate(Vector3.up * totalYaw);
+        yRecoilOffset = 0f;
+
         cameraTransform.localRotation = Quaternion.Euler(PlayerStateData.xRotation, 0f, 0f);
-        transform.Rotate(Vector3.up * mouseX);
+    }
+
+    // 외부에서 반동을 주입
+    public void ApplyRecoil(float verticalAmount, float horizontalAmount)
+    {
+        xRecoilOffset -= verticalAmount;
+        yRecoilOffset += horizontalAmount;
     }
     /// <summary>
     /// 캐릭터 컨트롤로 활성화 비활성화 여부
@@ -126,31 +149,20 @@ public class PlayerController : MonoBehaviour
         controller.enabled = enable;
     }
     #endregion
+
     /// <summary>
-    /// 무기 장착 
+    /// 무기 장착 시
     /// </summary>
     /// <param name="go"></param>
-    public void SetWeapon(GameObject go)
+    public void SetWeapon()
     {
-        if(go != null)
-        {
-            weapon = go;
-            RecoilController recoilController = go.GetComponent<RecoilController>();
-            if(recoilController != null)
-            {
-                weaponRecoil = recoilController;
-            }
-            else
-            {
-                weaponRecoil = null;
-            }
-        }
+        currentGun.SetPlayerController(this);
     }
 
     /// <summary>
     /// 재장전 애니메이션 실행
     /// </summary>
-    public void Reload()
+    public void ReloadAnimaion()
     {
         // IK 끄기
         GetComponent<FrInverseKinematic>().SetIKActive(false);
@@ -170,26 +182,44 @@ public class PlayerController : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         GetComponent<FrInverseKinematic>().SetIKActive(true);
+        isReload = false;
     }
     /// <summary>
-    /// 캐릭터가 총기 발사 실행 인풋시스템 사용
+    /// 캐릭터가 총기 발사 ,중지
     /// </summary>
     /// <param name="context"></param>
-    public void OnFire(InputAction.CallbackContext context)
+    public void OnFire(bool isShoot)
     {
-        if (context.performed)
+        if (currentState != NormalState) return;
+        if (isReload) return;
+ 
+        if (isShoot)
             currentGun?.StartFiring();
-        else if (context.canceled)
+        else
             currentGun?.StopFiring();
+
     }
+    private bool isReload = false; // 장전중 액션 정지용
     /// <summary>
     /// 재장전 인풋시스템 사용
     /// </summary>
     /// <param name="context"></param>
-    public void OnReload(InputAction.CallbackContext context)
+    public void OnReload()
     {
-        if (context.performed)
-            currentGun?.Reload();
+        if (currentState != NormalState) return;
+        if (currentGun == null) return;
+        if (!isReload)
+        {
+            isReload = true;
+            bool isbool = currentGun.Reload();
+
+            if (isbool)
+                ReloadAnimaion();
+            else
+                isReload = false;
+
+        }
+
     }
     /// <summary>
     /// 총기 변경

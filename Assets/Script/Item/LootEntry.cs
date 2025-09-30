@@ -3,7 +3,7 @@ using UnityEngine;
 [System.Serializable]
 public class LootEntry
 {
-    public Item item;         // 드랍 아이템
+    public ItemSO item;         // 드랍 아이템
     public float dropChance;  // 확률 (0~1)
     public int minAmount = 1;
     public int maxAmount = 3;

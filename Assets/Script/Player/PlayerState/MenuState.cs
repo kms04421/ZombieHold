@@ -24,7 +24,7 @@ public class MenuState : IPlayerState
     public void HandleInput()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
-            player.ChangeState(new NormalState(player));
+            player.ChangeState(player.NormalState);
     }
 
     public void UpdateState() { }

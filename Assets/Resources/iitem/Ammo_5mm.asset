@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ff120bb6173719844b386949feb4c70a, type: 3}
-  m_Name: Table
+  m_Name: Ammo_5mm
   m_EditorClassIdentifier: 
-  id: 1
-  itemName: Table
-  icon: {fileID: 21300000, guid: 332ef910fae03284b986f5f8a61c06ce, type: 3}
-  prefab: {fileID: 100000, guid: 1d402e25e58b8d144a8cee4a12633996, type: 3}
+  id: 2_1
+  itemName: Ammo_5mm
+  icon: {fileID: 21300000, guid: c26751133280e7e4b870c619b8fb6690, type: 3}
+  prefab: {fileID: 5896815481570757752, guid: bdbe99911b104c44cbd74b7cb58c4f0b, type: 3}
   stackable: 1
-  maxStack: 99
-  currentCount: 1
+  maxStack: 200
+  testCount: 20

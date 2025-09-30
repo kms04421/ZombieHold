@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using System.Diagnostics;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class Inventory : MonoBehaviour
-{
-    public Dictionary<string, Slot> slots = new Dictionary<string, Slot>();
+public class Inventory : MonoBehaviour {
+
+    [SerializeField] public Dictionary<string, Slot> slots = new Dictionary<string, Slot>();
 
     /// <summary>
     /// 아이템이 해당 갯수만큼 있는지 확인 
@@ -19,13 +19,39 @@ public class Inventory : MonoBehaviour
         foreach (var kvp in slots)
         {
             Slot slot = kvp.Value;
-            if (slot != null && slot.item != null && slot.item.id == itemId)
+            if (slot != null && slot.item != null && slot.item.template.id == itemId)
             {
-                totalCount += slot.item.currentCount; 
+                totalCount += slot.item.currentCount;
             }
         }
 
         return totalCount >= count;
+
+    }
+    /// <summary>
+    /// 아이템이 해당 갯수확인 
+    /// </summary>
+    /// <param name="itemId">아이템 id</param>
+    /// <param name="count">확인할 갯수</param>
+    /// <returns> </returns>
+    public int HasItemCount(string itemId)
+    {
+        int totalCount = 0;
+
+        foreach (var kvp in slots)
+        {
+            Slot slot = kvp.Value;
+            if (slot.item != null)
+            {
+               /// Debug.Log(slot.item.template.id);
+            }    
+            if (slot != null && slot.item != null && slot.item.template.id == itemId)
+            {
+                totalCount += slot.item.currentCount;
+            }
+        }
+
+        return totalCount;
 
     }
     /// <summary>
@@ -41,9 +67,9 @@ public class Inventory : MonoBehaviour
         foreach (var kvp in slots)
         {
             Slot slot = kvp.Value;
-            if (slot != null && slot.item != null && slot.item.id == item.id && item.stackable)
+            if (slot != null && slot.item != null && slot.item.template.id == item.template.id && item.template.stackable)
             {
-                int availableSpace = slot.item.maxStack - slot.item.currentCount;
+                int availableSpace = slot.item.template.maxStack - slot.item.currentCount;
                 int toAdd = Mathf.Min(availableSpace, count);
 
                 slot.item.currentCount += toAdd;
@@ -64,7 +90,7 @@ public class Inventory : MonoBehaviour
             if (slot != null && slot.item == null) // 빈 슬롯
             {
                 slot.SetSlot(item);                     // 슬롯에 아이템 설정
-                slot.item.currentCount = Mathf.Min(count, item.maxStack);
+                slot.item.currentCount = Mathf.Min(count, item.template.maxStack);
                 count -= slot.item.currentCount;
 
                 if (count <= 0)
@@ -87,11 +113,22 @@ public class Inventory : MonoBehaviour
         foreach (var kvp in slots)
         {
             Slot slot = kvp.Value;
-            if (slot != null && slot.item != null && slot.item.id == itemId)
+            if (slot != null && slot.item != null && slot.item.template.id == itemId)
             {
-                     
-                slot.RemoveSlot(count);
-                
+                if(slot.item.currentCount >= count)
+                {
+                    slot.RemoveSlot(count);
+                    count = 0;
+                }
+                else
+                {
+                    count = count - slot.item.currentCount;  
+                    slot.RemoveSlot(slot.item.currentCount);
+                }
+                if(count == 0)
+                {
+                    break;
+                }
             }
         }
     }

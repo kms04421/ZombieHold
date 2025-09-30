@@ -17,6 +17,7 @@ MonoBehaviour:
   fireRate: 0.1
   range: 100
   isFullAuto: 0
-  maxAmmo: 30
-  muzzleFlashPrefab: {fileID: 100006, guid: b0a227fc2e558f241b1c747820ccc361, type: 3}
   gunShotClip: {fileID: 8300000, guid: 2eaf9c6251c7c72498b814275df7cc78, type: 3}
+  maxAmmo: 30
+  type: 1
+  muzzleFlashPrefab: {fileID: 100006, guid: b0a227fc2e558f241b1c747820ccc361, type: 3}
