@@ -17,11 +17,14 @@ namespace YourGame.AI
 
         public void Execute(Zombie z)
         {
-            if (z.ChaseTarget != null)
+           if(!z.ChaseTarget.isGrounded)
             {
-                z.Agent.SetDestination(z.ChaseTarget.position);
+                z.Agent.SetDestination(z.ChaseTarget.jumpPos);
             }
-               
+            else
+            {
+                z.Agent.SetDestination(z.ChaseTarget.transform.position);
+            }             
             z.Animator.SetFloat("speed", speed);
         }
 

@@ -31,6 +31,7 @@ public class Health : MonoBehaviour
     public void TakeDamage(float amount)
     {
         currentHealth -= amount;
+        playerUI.Instance.UpdateHealthUI(currentHealth/maxHp);
         if (currentHealth <= 0f)
         {
             Die();
@@ -41,6 +42,7 @@ public class Health : MonoBehaviour
     {
         Debug.Log("플레이어 사망");
         onDeath?.Invoke(); // 죽음 알림
+        playerController.ChangeState(playerController.DeadState);
         // 애니메이션이나 GameOver 처리도 여기서 가능
     }
 

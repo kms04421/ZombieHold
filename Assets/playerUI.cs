@@ -41,6 +41,7 @@ public class playerUI : Singleton<playerUI>
     /// </summary>
     public void UpdateHealthUI(float ratio)
     {
+        Debug.Log(ratio);
         ratio = Mathf.Clamp01(ratio);
         healthImg.fillAmount = ratio;
     }

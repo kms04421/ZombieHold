@@ -3,8 +3,11 @@ using UnityEngine.EventSystems;
 
 public class MixtureItem : MonoBehaviour, IPointerClickHandler
 {
+    [Header("비활성화 배경")]
     [SerializeField] private GameObject Deactivate;
+    [Header("텝바 컨트롤러")]
     [SerializeField] private TabBarController tabBarController;
+    [Header("제작 조건메뉴 SO")]
     [SerializeField] private CraftingRecipe craftingRecipe;
     public bool Activate = false;
     private RectTransform RectTransform;
@@ -30,4 +33,6 @@ public class MixtureItem : MonoBehaviour, IPointerClickHandler
     {
         tabBarController.ShowTabBar(RectTransform , craftingRecipe); // 텝바 호풀
     }
+
+
 }

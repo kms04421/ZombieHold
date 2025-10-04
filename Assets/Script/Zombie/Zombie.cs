@@ -9,14 +9,14 @@ namespace YourGame.AI
         public enum HitType { Normal, Head, Leg }
 
         [Header("Chase")]
-        [SerializeField] private Transform chaseTarget; // 추적 대상
-        public Transform ChaseTarget => chaseTarget;
+        [SerializeField] private PlayerController chaseTarget; // 추적 대상
+        public PlayerController ChaseTarget => chaseTarget;
 
         [Header("ZombieData")]
         public float currentHealth { get; private set; }
         [SerializeField] private float maxHp = 100f; // 임시
         [SerializeField] private float baseSpeed = 1f; // speed 0 , 1 :걷기, 3 :뛰기
-        private float zombieDamege = 10f;
+        [HideInInspector]public float zombieDamege = 10f;
 
         [Header("Component ")]
         public NavMeshAgent Agent { get; private set; }

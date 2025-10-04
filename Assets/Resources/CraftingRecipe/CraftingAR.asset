@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b207f698587a75649bf89cc219ac0960, type: 3}
-  m_Name: CraftingRecipe
+  m_Name: CraftingAR
   m_EditorClassIdentifier: 
-  recipeName: 
+  recipeName: AR
   ingredients:
-  - item: {fileID: 11400000, guid: d11e20b40d39cd5459bf05c4ebb80353, type: 2}
-    count: 1
-  resultItem: {fileID: 11400000, guid: 26d109496ab4ee842b6af71a5d946ae6, type: 2}
-  resultCount: 4
+  - item: {fileID: 11400000, guid: 50d0f1b1df2367b4d9400bf116884af3, type: 2}
+    count: 2
+  resultItem: {fileID: 11400000, guid: b2b9fbd07db19d143a5803671f43ddc0, type: 2}
+  resultCount: 1

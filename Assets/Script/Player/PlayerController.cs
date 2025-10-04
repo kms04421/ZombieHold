@@ -1,9 +1,11 @@
 using System.Collections;
+using System.Xml;
 using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("PlayeData")]
     public PlayerData playerData;
+   
     [Header("GunData")]
     public GameObject weapon;
 
@@ -23,10 +25,13 @@ public class PlayerController : MonoBehaviour
 
     private CharacterController controller;
     private Vector3 velocity;
-    private bool isGrounded;
+
+    public bool isGrounded;
 
     [Header("무기 슬롯")]
     public GunBase currentGun;
+
+    public Vector3 jumpPos; // 점프시 임시 저장위치 좀비추격에 필요
 
     private IPlayerState currentState;
 
@@ -34,6 +39,7 @@ public class PlayerController : MonoBehaviour
     public IPlayerState NormalState { get; private set; }
     public IPlayerState InventoryState { get; private set; }
     public IPlayerState MenuState { get; private set; }
+    public IPlayerState DeadState { get; private set; }
     ///상태패턴
     ///
     void Awake()
@@ -45,6 +51,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        DeadState = new DeadState(this);
         NormalState = new NormalState(this);
         InventoryState = new InventoryState(this);
         MenuState = new MenuState(this);
@@ -101,6 +108,7 @@ public class PlayerController : MonoBehaviour
             velocity.y = Mathf.Sqrt(jumpForce * -1.5f * gravity);
             animator.SetBool("isJump", true);
             isGrounded = false;
+            jumpPos = GetGroundPoint();
         }
 
         velocity.y += gravity * Time.deltaTime;
@@ -114,7 +122,16 @@ public class PlayerController : MonoBehaviour
         if (isGrounded && animator.GetBool("isJump"))
             animator.SetBool("isJump", false);
     }
+    private Vector3 GetGroundPoint()
+    {
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 10f))
+        {
+            return hit.point; // 레이가 땅에 닿은 위치 반환
+        }
 
+        // 맞은 게 없을 경우, 자기 위치 그대로 반환
+        return transform.position;
+    }
     public void LookAround()
     {
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
@@ -192,7 +209,7 @@ public class PlayerController : MonoBehaviour
     {
         if (currentState != NormalState) return;
         if (isReload) return;
- 
+
         if (isShoot)
             currentGun?.StartFiring();
         else
@@ -233,4 +250,7 @@ public class PlayerController : MonoBehaviour
         currentGun = newGun;
         currentGun.gameObject.SetActive(true);
     }
+  
+
+
 }
