@@ -114,7 +114,7 @@ public class MiniGameController : Singleton<MiniGameController>
     {
         isWaiting = false;
         miniGameUI.HideMiniGame(index);
-        player.ChangeState(new InventoryState(player));
+        player.ChangeState(player.InventoryState);
         onSuccessCallback?.Invoke();       
     }
     /// <summary>
@@ -124,7 +124,7 @@ public class MiniGameController : Singleton<MiniGameController>
     /// <param name="onSuccess">성공메서드 캐싱용</param>
     public void RequestMiniGame(int[] ary, Action onSuccess)
     {
-        player.ChangeState(new MenuState(player));
+        player.ChangeState(player.MenuState);
         answerNumbers = ary;
         miniGameUI.ShowMiniGame(0);
         onSuccessCallback = onSuccess;
@@ -156,7 +156,7 @@ public class MiniGameController : Singleton<MiniGameController>
     {
         ResetPasswordGame();
         miniGameUI.HideMiniGame(index);
-        player.ChangeState(new NormalState(player));
+        player.ChangeState(player.InventoryState);
     }
 
 }

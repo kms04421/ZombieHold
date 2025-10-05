@@ -184,6 +184,7 @@ public class PlayerController : MonoBehaviour
         // IK 끄기
         GetComponent<FrInverseKinematic>().SetIKActive(false);
 
+     
         // 리로드 애니메이션 실행
         animator.SetTrigger("Reload");
 
@@ -198,6 +199,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator RestoreIKAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
+        GetComponent<FrInverseKinematic>().SetOrgPos();
         GetComponent<FrInverseKinematic>().SetIKActive(true);
         isReload = false;
     }
@@ -250,7 +252,12 @@ public class PlayerController : MonoBehaviour
         currentGun = newGun;
         currentGun.gameObject.SetActive(true);
     }
-  
-
+  /// <summary>
+  /// 현재 상태 체크
+  /// </summary>
+    public bool ChkState(IPlayerState playerState)
+    {
+        return currentState == playerState;
+    }
 
 }

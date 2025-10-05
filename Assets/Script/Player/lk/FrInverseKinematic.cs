@@ -5,9 +5,20 @@ public class FrInverseKinematic : MonoBehaviour
     public Transform leftHand;
     public Transform rightHand;
 
+    public Transform test;
+    public Transform testGun;
+    private Vector3 orgPos;
+    private Quaternion orgRot;
+    public Transform orgParnt;
+
     private Animator animator;
     private int layerIndex_Weapons;
-    public bool enableIK = true; //  IK 켜기/끄기 제어용
+
+    [Header("IK 제어")]
+    public bool enableIK = true;         // 전체 IK 제어
+    public bool enableLeftHandIK = true; // 왼손만 개별 제어
+    public bool enableRightHandIK = true; // 오른손만 개별 제어
+
     void Awake()
     {
         animator = GetComponent<Animator>();
@@ -30,8 +41,11 @@ public class FrInverseKinematic : MonoBehaviour
         {
             animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1f);
             animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1f);
-            animator.SetIKPosition(AvatarIKGoal.LeftHand, leftHand.position);
-            animator.SetIKRotation(AvatarIKGoal.LeftHand, leftHand.rotation);
+            if (enableLeftHandIK)
+            {
+                animator.SetIKPosition(AvatarIKGoal.LeftHand, leftHand.position);
+                animator.SetIKRotation(AvatarIKGoal.LeftHand, leftHand.rotation);
+            }
         }
 
         // 오른손 IK
@@ -39,9 +53,13 @@ public class FrInverseKinematic : MonoBehaviour
         {
             animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1f);
             animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1f);
-            animator.SetIKPosition(AvatarIKGoal.RightHand, rightHand.position);
-            animator.SetIKRotation(AvatarIKGoal.RightHand, rightHand.rotation);
+            if (enableRightHandIK)
+            {
+                animator.SetIKPosition(AvatarIKGoal.RightHand, rightHand.position);
+                animator.SetIKRotation(AvatarIKGoal.RightHand, rightHand.rotation);
+            }
         }
+
     }
     /// <summary>
     /// IK활성화 비활성화
@@ -49,6 +67,36 @@ public class FrInverseKinematic : MonoBehaviour
     /// <param name="active"></param>
     public void SetIKActive(bool active)
     {
+
+        orgParnt = testGun.parent;
+        if(!active)
+        { 
+            orgPos = testGun.localPosition;
+            orgRot = testGun.localRotation;
+            testGun.SetParent(test);
+            // 원하면 로컬 위치/회전 초기화
+            testGun.localPosition = Vector3.zero;
+            testGun.localRotation = Quaternion.identity;
+        }
+
+            
         enableIK = active;
+    }
+    // 왼손 IK 개별 제어
+    public void SetLeftHandIK(bool active)
+    {
+        enableLeftHandIK = active;
+    }
+
+    // 오른손 IK 개별 제어
+    public void SetRightHandIK(bool active)
+    {
+        enableRightHandIK = active;
+    }
+    public void SetOrgPos()
+    {
+        testGun.SetParent(orgParnt);
+        testGun.localPosition = orgPos;
+        testGun.localRotation = orgRot;
     }
 }

@@ -40,6 +40,7 @@ public class Health : MonoBehaviour
 
     void Die()
     {
+        if (playerController.ChkState(playerController.DeadState)) return;
         Debug.Log("ÇÃ·¹ÀÌ¾î »ç¸Á");
         onDeath?.Invoke(); // Á×À½ ¾Ë¸²
         playerController.ChangeState(playerController.DeadState);
