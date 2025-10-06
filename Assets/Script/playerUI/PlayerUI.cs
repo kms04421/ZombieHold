@@ -2,13 +2,16 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class playerUI : Singleton<playerUI>
+public class PlayerUI : Singleton<PlayerUI>
 {
     [SerializeField] private Image healthImg;
     [SerializeField] private TextMeshProUGUI currentAmmo;
     [SerializeField] private TextMeshProUGUI allAmmo;
     [SerializeField] private Image weaponImg;
-
+    [SerializeField] private TextMeshProUGUI AbilityName;
+    [SerializeField] private TextMeshProUGUI AbilityDescription;
+    [SerializeField] private Button AbilityButton;
+    [SerializeField] private TextMeshProUGUI AbilityPoint;
     /// <summary>
     /// 현재 총알정보 세팅
     /// </summary>
@@ -44,5 +47,22 @@ public class playerUI : Singleton<playerUI>
         Debug.Log(ratio);
         ratio = Mathf.Clamp01(ratio);
         healthImg.fillAmount = ratio;
+    }
+
+    public void SetAbilityNameText(string name)
+    {
+        AbilityName.text = name;
+    }
+    public void SetAbilityDescriptionText(string Description)
+    {
+        AbilityDescription.text = Description;
+    }
+    public void SetAbilityBtnActive(bool isActive)
+    {
+        AbilityButton.gameObject.SetActive(isActive);
+    }
+    public void SetAbilityPoint(int value)
+    {
+        AbilityPoint.text = value.ToString();
     }
 }

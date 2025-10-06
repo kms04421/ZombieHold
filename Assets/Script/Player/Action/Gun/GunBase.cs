@@ -37,7 +37,13 @@ public class GunBase : MonoBehaviour
 
     private float nextFireTime = 0f;
 
-  
+    [Header("ÅºÃ¢ ¿ë")]
+    private Transform orgMagazineParnt;
+    private Vector3 orgMagazinePos;
+    private Quaternion orgMagazineRot;
+    public Transform magazine;
+    public Transform leftHandPos;
+
     protected virtual void Awake()
     {
         CurrentAmmo = gunData.maxAmmo;
@@ -109,7 +115,7 @@ public class GunBase : MonoBehaviour
             audioSource.PlayOneShot(gunData.gunShotClip);
 
         CurrentAmmo--;
-        playerUI.Instance.SetCurrentAmmo(CurrentAmmo);
+        PlayerUI.Instance.SetCurrentAmmo(CurrentAmmo);
     }
     /// <summary>
     /// ÃÑ±¸ ÀÌÆåÆ® È¿°ú
@@ -152,8 +158,8 @@ public class GunBase : MonoBehaviour
             total -= needed;
         }
 
-        playerUI.Instance.SetCurrentAmmo(CurrentAmmo);
-        playerUI.Instance.SetAllAmmo(total);
+        PlayerUI.Instance.SetCurrentAmmo(CurrentAmmo);
+        PlayerUI.Instance.SetAllAmmo(total);
         return true;
     }
 
@@ -182,7 +188,23 @@ public class GunBase : MonoBehaviour
       
         int total = inventory.HasItemCount(ammoID);
      
-        playerUI.Instance.SetCurrentAmmo(CurrentAmmo);
-        playerUI.Instance.SetAllAmmo(total);
+        PlayerUI.Instance.SetCurrentAmmo(CurrentAmmo);
+        PlayerUI.Instance.SetAllAmmo(total);
+    }
+
+    public void Magazine()
+    {
+        orgMagazineParnt = magazine.parent;
+        orgMagazinePos = magazine.localPosition;
+        orgMagazineRot = magazine.localRotation;
+        magazine.SetParent(leftHandPos);
+        magazine.localPosition = Vector3.zero;
+        magazine.localRotation = Quaternion.identity;
+    }
+    public void ReturnMagazine()
+    {
+        magazine.SetParent(orgMagazineParnt);
+        magazine.localPosition = orgMagazinePos;
+        magazine.localRotation = orgMagazineRot;
     }
 }

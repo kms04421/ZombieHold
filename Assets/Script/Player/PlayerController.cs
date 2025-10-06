@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     public float mouseSensitivity = 2f;
 
     [HideInInspector] public Animator animator;
-
+    private FrInverseKinematic frInverseKinematic;
     private CharacterController controller;
     private Vector3 velocity;
 
@@ -47,6 +47,7 @@ public class PlayerController : MonoBehaviour
         playerData = new PlayerData();
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
+        frInverseKinematic = GetComponent<FrInverseKinematic>();
     }
 
     void Start()
@@ -182,14 +183,12 @@ public class PlayerController : MonoBehaviour
     public void ReloadAnimaion()
     {
         // IK 끄기
-        GetComponent<FrInverseKinematic>().SetIKActive(false);
-
-     
+        frInverseKinematic.SetIKActive(false);
         // 리로드 애니메이션 실행
         animator.SetTrigger("Reload");
-
+  
         // 코루틴으로 일정 시간 후 다시 IK 켜기 (애니메이션 길이에 맞춰 조절)
-        StartCoroutine(RestoreIKAfterDelay(3.5f));
+        StartCoroutine(RestoreIKAfterDelay(3.1f));
     }
     /// <summary>
     /// 일정시간후 ik활성화
@@ -199,9 +198,18 @@ public class PlayerController : MonoBehaviour
     private IEnumerator RestoreIKAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        GetComponent<FrInverseKinematic>().SetOrgPos();
-        GetComponent<FrInverseKinematic>().SetIKActive(true);
+        frInverseKinematic.SetOrgPos();
+        frInverseKinematic.SetIKActive(true);
         isReload = false;
+    }
+
+    public void DetachMagazine()
+    {
+        currentGun.Magazine();
+    }
+    public void AttachMagazine()
+    {
+        currentGun.ReturnMagazine();
     }
     /// <summary>
     /// 캐릭터가 총기 발사 ,중지
@@ -260,4 +268,8 @@ public class PlayerController : MonoBehaviour
         return currentState == playerState;
     }
 
+    public void SetStats(PlayerData _playerData)
+    {
+        playerData.AddPlayData(_playerData);
+    }
 }

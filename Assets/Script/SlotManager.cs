@@ -10,7 +10,7 @@ public class SlotManager : Singleton<SlotManager>
     [HideInInspector]public Inventory inventory;
 
     [Header("슬롯 정보 설정")]
-    private int slotCount = 36;
+    private int slotCount = 39;
 
     [SerializeField] private Slot[] uiSlots;
 

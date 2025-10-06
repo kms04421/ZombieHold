@@ -1,7 +1,9 @@
 using System;
 using UnityEngine;
+using System.Collections;
 public class GunAR : GunBase
 {
+  
     public void StartRecoil()
     {
         if (CurrentAmmo == 0) return;
@@ -17,4 +19,6 @@ public class GunAR : GunBase
         base.Shoot();
         StartRecoil();
     }
+
+  
 }

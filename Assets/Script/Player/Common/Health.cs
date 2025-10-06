@@ -31,7 +31,7 @@ public class Health : MonoBehaviour
     public void TakeDamage(float amount)
     {
         currentHealth -= amount;
-        playerUI.Instance.UpdateHealthUI(currentHealth/maxHp);
+        PlayerUI.Instance.UpdateHealthUI(currentHealth/maxHp);
         if (currentHealth <= 0f)
         {
             Die();
@@ -55,6 +55,12 @@ public class Health : MonoBehaviour
     public float GetHealthRatio()
     {
         return currentHealth / maxHp;
+    }
+    public void SetMaxHp(float amount)
+    {
+        maxHp = amount;
+        currentHealth += amount;
+        PlayerUI.Instance.UpdateHealthUI(currentHealth / maxHp);
     }
 
     #region ±¸Á¶¹° 
