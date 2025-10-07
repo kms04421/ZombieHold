@@ -53,7 +53,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   test: {fileID: 0}
-  item: {fileID: 0}
   image: {fileID: 1934239984413333547}
   coolTime: {fileID: 1541920202825564877}
   currnetCountText: {fileID: 1589155318032581511}
@@ -262,7 +261,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 29.154022, y: 0, z: 44.04419, w: 2.8973389}
+  m_margin: {x: 0.8502884, y: 0, z: 1.0337143, w: 2.8973389}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0

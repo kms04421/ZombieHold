@@ -71,18 +71,17 @@ public class Inventory : MonoBehaviour {
             {
                 int availableSpace = slot.item.template.maxStack - slot.item.currentCount;
                 int toAdd = Mathf.Min(availableSpace, count);
-
-                slot.item.currentCount += toAdd;
                 count -= toAdd;
 
-                if (count <= 0)
+                if(toAdd > 0)
                 {
-                    slot.SetSlot(item);
-                    return; // 모두 추가 완료
+                    Debug.Log("AddSlot" + toAdd);
+                    slot.AddSlot(toAdd);
                 }
             }
         }
-
+        if (count <= 0) return;
+        Debug.Log("?");
         // 2. 빈 슬롯 찾기
         foreach (var kvp in slots)
         {

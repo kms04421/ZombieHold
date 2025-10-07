@@ -13,6 +13,8 @@ public class AbilitySlot : MonoBehaviour
 
     [SerializeField] private AbilityController controller;
 
+    [SerializeField] private List<AbilitySlot> CheckAbility;
+
     private PlayerUI playerUI;
     private void Start()
     {
@@ -46,7 +48,7 @@ public class AbilitySlot : MonoBehaviour
 
         controller.Init();//√ ±‚»≠
 
-        if (!canActivateAbility)
+        if (!canActivateAbility || !HasPrerequisite())
         {
             playerUI.SetAbilityBtnActive(false);
             return;
@@ -62,5 +64,18 @@ public class AbilitySlot : MonoBehaviour
             controller.SetPlayerData(abilityData.stats, abilityData.value);
         }
         controller.SetAbilitySlot(this);
+    }
+
+    private bool HasPrerequisite()
+    {
+        for (int i = 0; i < CheckAbility.Count; i++)
+        {
+            if(CheckAbility[i].canActivateAbility)
+            {
+                Debug.Log("?");
+                return false;
+            }
+        }
+        return true;
     }
 }
