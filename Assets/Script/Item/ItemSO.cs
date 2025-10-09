@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewItem", menuName = "Itme/Item")]
@@ -13,4 +14,12 @@ public class ItemSO : ScriptableObject
     public bool stackable = true; // 겹쳐쓸 수 있는지 여부
     public int maxStack = 99;     // 최대 개수
     public int testCount = 0;  // 테스트용 개수
+
+    [Header("드랍관련")]
+    [Range(0,1)]
+    public float dropChance = 0f;
+    [Min(1)]
+    public int minDropCount = 1;   // 최소 드랍 수량
+    [Min(1)]
+    public int maxDropCount = 1;   // 최대 드랍 수량
 }

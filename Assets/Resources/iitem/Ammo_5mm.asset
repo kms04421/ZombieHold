@@ -15,7 +15,10 @@ MonoBehaviour:
   id: 2_1
   itemName: Ammo_5mm
   icon: {fileID: 21300000, guid: c26751133280e7e4b870c619b8fb6690, type: 3}
-  prefab: {fileID: 5896815481570757752, guid: bdbe99911b104c44cbd74b7cb58c4f0b, type: 3}
+  prefab: {fileID: 6403917436476715737, guid: ea18e21d9efc71443879ef23defa87eb, type: 3}
   stackable: 1
   maxStack: 200
   testCount: 20
+  dropChance: 1
+  minDropCount: 2
+  maxDropCount: 10

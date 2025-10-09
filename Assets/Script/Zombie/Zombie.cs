@@ -1,6 +1,7 @@
+using System.Collections;
+using UnityEditor.EditorTools;
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections;
 namespace YourGame.AI
 {
     [RequireComponent(typeof(NavMeshAgent))]
@@ -22,6 +23,7 @@ namespace YourGame.AI
         public NavMeshAgent Agent { get; private set; }
         public Animator Animator { get; private set; }
         [SerializeField]private AttackBox attackBox;
+        private MonsterDrop monsterDrop;
 
         [Header("IZombieState")]
         public IZombieState ChaseState { get; private set; }
@@ -30,21 +32,23 @@ namespace YourGame.AI
 
         private IZombieState currentState;
 
+        private PoolManager poolManager;
         private void Awake()
         {
             Animator = GetComponent<Animator>();
             Agent = GetComponent<NavMeshAgent>();
             currentHealth = maxHp;
-
+            poolManager = PoolManager.Instance;
             ChaseState = new ZombieChaseState(Random.Range(1,4));
             DeadState = new ZombieDeadState();
             AttackState = new NomalZombieAttack();
+            monsterDrop = GetComponent<MonsterDrop>();
         }
         private void OnEnable()
         {
             if (GameManager.Instance.PlayerList.Count > 0)
             {
-                chaseTarget = GameManager.Instance.GetPlayer();
+                chaseTarget = GameManager.Instance.GetPlayer;
                 ChangeState(ChaseState);
             }
             else
@@ -56,7 +60,7 @@ namespace YourGame.AI
         private IEnumerator WaitForPlayers()
         {
             yield return new WaitUntil(() => GameManager.Instance.PlayerList.Count > 0);
-            chaseTarget = GameManager.Instance.GetPlayer();
+            chaseTarget = GameManager.Instance.GetPlayer;
             ChangeState(ChaseState);
         }
         private void Start()
@@ -89,6 +93,7 @@ namespace YourGame.AI
         public void Die()
         {
             Animator.SetTrigger("Die");
+            monsterDrop.DropLoot();
             Invoke("ReturnZombie", 3);
             // 사망 애니메이션, 콜라이더 비활성화 등
         }
@@ -96,8 +101,7 @@ namespace YourGame.AI
         {
             currentHealth = maxHp;
             ChangeState(ChaseState);
-            // 풀로 반환
-            ZombiePoolManager.Instance.ReturnZombie(gameObject);
+            PoolManager.Instance.GetPool<Zombie>().ReturnToPool(this);
         }
         public void TryHit()
         {

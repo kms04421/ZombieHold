@@ -1,24 +1,48 @@
-using UnityEngine;
 using System.Collections;
+using UnityEditor.EditorTools;
+using UnityEngine;
+using YourGame.AI;
 
 public class ZombieSpawner : MonoBehaviour
 {
-    private float spawnInterval = 0.1f;
-
-    public IEnumerator SpawnZombies(int dayCount)
+    //캐싱용
+    private Coroutine coroutine; 
+    private PoolManager poolManager;
+    private WaitForSeconds delay;
+    //스폰 주기
+    private float spawnInterval = 1f;
+    private void Awake()
     {
-        int spawnMaxCount =20 + (dayCount *2);
-        int spawnCount = 0;
-        while (spawnCount < spawnMaxCount)
+        GameManager.OnSpawnZombie += SpawnZombie;
+        poolManager = PoolManager.Instance;
+        delay = new WaitForSeconds(spawnInterval);
+    }
+    /// <summary>
+    /// 좀비 스폰 코루틴시작
+    /// </summary>
+    /// <param name="day"></param>
+    public void SpawnZombie(int day)
+    {
+        if (coroutine != null) return;
+        coroutine = StartCoroutine(SpawnRoutine(day));
+    }
+    /// <summary>
+    /// 좀비를 정해진 카운터만큼 생성
+    /// </summary>
+    /// <param name="day"></param>
+    /// <returns></returns>
+    private IEnumerator SpawnRoutine(int day)
+    {
+        int zombieCount = day * 2;
+        while (zombieCount > 0)
         {
-            spawnCount++;   
-            Vector3 spawnPos = transform.position + Random.insideUnitSphere * 10f;
-            spawnPos.y = 0;
-
-            ZombiePoolManager.Instance.GetZombie(spawnPos, Quaternion.identity);
-
-            yield return new WaitForSeconds(spawnInterval);
+            zombieCount--;
+            Zombie zombie = poolManager.GetPool<Zombie>().Get(); //풀에서 좀비 가져옴
+            zombie.transform.localPosition = transform.localPosition;
+            zombie.transform.localRotation = Quaternion.identity;
+            zombie.gameObject.SetActive(true);
+            yield return delay;
         }
-     
+        coroutine = null;
     }
 }

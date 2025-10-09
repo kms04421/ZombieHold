@@ -1,27 +1,39 @@
-using UnityEngine;
 using System;
 using System.Collections;
-public class InteractionItem : Interactable
+using UnityEngine;
+using YourGame.AI;
+public class ItemDrop : Interactable
 {
 
-    public ItemSO tset;
+    public ItemSO test;
     private Item item;
     //아이템 카운터 다운 설정
     const int MaxCount = 60; // 최대 시간
     private int currentCount = 0;//현재 시간
     // WaitForSeconds 캐싱용 1초
     WaitForSeconds seconds = new WaitForSeconds(1);
-    // 현재오브젝트의 부모오브젝트 저장용
-    private Transform parentTransform;
-
     private void Start()
     {
-        item = new Item(tset);
-        parentTransform = gameObject.transform.parent;
+        if(test != null)
+        {
+            item = new Item(test);
+        }
     }
     private void OnEnable()
     {
         StartCoroutine(DisableCount());
+    }
+    public void SetItme(ItemSO _item , int Count)
+    {
+        if(item == null)
+        {
+            item = new Item(_item, Count);
+        }
+        else
+        {
+            item.template = _item;
+            item.currentCount = Count;
+        }
     }
     /// <summary>
     /// 초기화
@@ -38,7 +50,7 @@ public class InteractionItem : Interactable
     /// </summary>
     private void Disable()
     {
-        parentTransform.gameObject.SetActive(false);
+        PoolManager.Instance.GetPool<ItemDrop>().ReturnToPool(this);
     }
     /// <summary>
     /// 아이템이 사라지기까지 카운터 다운

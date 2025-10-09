@@ -15,7 +15,7 @@ TagManager:
   - UI
   - Player
   - Item
-  - Interaction
+  - MapCollider
   - Monster
   - 
   - 
