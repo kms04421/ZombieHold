@@ -13,7 +13,7 @@ public class ZombieSpawner : MonoBehaviour
     private float spawnInterval = 1f;
     private void Awake()
     {
-        GameManager.OnSpawnZombie += SpawnZombie;
+        GameManager.OnSpawnZombie += SpawnZombie; //게임메니저에 있는 OnSpawnZombie에 구독 
         poolManager = PoolManager.Instance;
         delay = new WaitForSeconds(spawnInterval);
     }

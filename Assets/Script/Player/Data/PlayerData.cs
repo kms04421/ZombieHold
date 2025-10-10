@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class PlayerData
 {
     public string room;
@@ -12,6 +10,10 @@ public class PlayerData
     public int Level { get; private set; }
     public float AttackPower { get; private set; }
     public float Defense { get; private set; }
+
+    public float WalkSpeed { get; private set; }
+    public float RunSpeed { get; private set; }
+    public float BackSpeed { get; private set; }
     public PlayerData()
     {
         PlayerName = "test";
@@ -19,6 +21,9 @@ public class PlayerData
         Level = 0;
         AttackPower = 0;
         Defense = 1;
+        WalkSpeed = 3f;
+        RunSpeed = 6f;
+        BackSpeed = 2f;
     }
 
     /// <summary>

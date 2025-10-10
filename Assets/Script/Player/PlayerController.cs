@@ -10,12 +10,9 @@ public class PlayerController : MonoBehaviour
     public GameObject weapon;
 
     [Header("Movement")]
-    public float walkSpeed = 3f;
-    public float runSpeed = 6f;
-    public float backSpeed = 2f;
-    private float jumpForce = 1f;
+    private const float jumpForce = 1f;
     public float gravity = -9.81f;
-    private float xRecoilOffset = 0f;   // Recoil이 줄 값
+    private float xRecoilOffset = 0f; // Recoil이 줄 값
     private float yRecoilOffset = 0f; // 좌우 반동
     [Header("Mouse Look")]
     public Transform cameraTransform;
@@ -24,6 +21,7 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public Animator animator;
     private FrInverseKinematic frInverseKinematic;
     private CharacterController controller;
+    private DebuffHandler debuffHandler;
     private Vector3 velocity;
 
     public bool isGrounded;
@@ -52,6 +50,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        debuffHandler = GetComponent<DebuffHandler>();
         DeadState = new DeadState(this);
         NormalState = new NormalState(this);
         InventoryState = new InventoryState(this);
@@ -93,15 +92,30 @@ public class PlayerController : MonoBehaviour
         bool isRunning = false;
 
         if (moveZ < 0)
-            currentSpeed = backSpeed;
+            currentSpeed = playerData.BackSpeed;
         else if (Input.GetKey(KeyCode.LeftShift) && moveDir.magnitude > 0.1f)
         {
-            currentSpeed = runSpeed;
+            currentSpeed = playerData.RunSpeed;
             isRunning = true;
         }
         else if (moveDir.magnitude > 0.1f)
-            currentSpeed = walkSpeed;
+            currentSpeed = playerData.WalkSpeed;
 
+        // 디버프
+        if (debuffHandler != null)
+        {
+            if (debuffHandler.IsStunned())
+            {
+                // 행동 불가 처리
+                currentSpeed = 0f;
+            }
+            else
+            {
+                // 속도 적용
+                currentSpeed = currentSpeed * debuffHandler.GetSpeedModifier();
+            }
+        }
+        // 디버프
         controller.Move(moveDir * currentSpeed * Time.deltaTime);
 
         if (Input.GetButtonDown("Jump") && isGrounded)
@@ -122,6 +136,16 @@ public class PlayerController : MonoBehaviour
 
         if (isGrounded && animator.GetBool("isJump"))
             animator.SetBool("isJump", false);
+    }
+    public void ApplyGravity()
+    {
+        if (controller.isGrounded && velocity.y < 0)
+        {
+            velocity.y = 0f; // 바닥에 닿으면 속도 초기화
+        }
+
+        velocity.y += gravity * Time.deltaTime;      // 중력 누적
+        controller.Move(velocity * Time.deltaTime);  // 이동 적용
     }
     private Vector3 GetGroundPoint()
     {
@@ -267,9 +291,13 @@ public class PlayerController : MonoBehaviour
     {
         return currentState == playerState;
     }
-
+    /// <summary>
+    /// 어빌리티 능력 playerData 적용
+    /// </summary>
+    /// <param name="_playerData"></param>
     public void SetStats(PlayerData _playerData)
     {
         playerData.AddPlayData(_playerData);
     }
+    
 }

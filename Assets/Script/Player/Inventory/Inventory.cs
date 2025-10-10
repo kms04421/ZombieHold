@@ -81,7 +81,7 @@ public class Inventory : MonoBehaviour {
             }
         }
         if (count <= 0) return;
-        Debug.Log("?");
+ 
         // 2. ºó ½½·Ô Ã£±â
         foreach (var kvp in slots)
         {

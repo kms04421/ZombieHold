@@ -2,8 +2,8 @@ using UnityEngine;
 using System.Collections;
 public class PlacementManager : Singleton<PlacementManager>
 {
-    [Header("설치할 오브젝트 프리펩")]
-    public GameObject prefab;        // 설치할 오브젝트 보관용
+    //설치할 오브젝트 프리펩 저장용
+    [HideInInspector] public GameObject prefab;        // 설치할 오브젝트 보관용
 
     [Header("설치 환경 설정")]
     public float maxDistance = 5f;  // 설치 거리

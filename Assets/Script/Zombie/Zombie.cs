@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEditor.EditorTools;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UIElements;
 namespace YourGame.AI
 {
     [RequireComponent(typeof(NavMeshAgent))]
@@ -14,16 +15,13 @@ namespace YourGame.AI
         public PlayerController ChaseTarget => chaseTarget;
 
         [Header("ZombieData")]
+        public ZombieData data;
         public float currentHealth { get; private set; }
-        [SerializeField] private float maxHp = 100f; // 임시
-        [SerializeField] private float baseSpeed = 1f; // speed 0 , 1 :걷기, 3 :뛰기
-        [HideInInspector]public float zombieDamege = 10f;
-
         [Header("Component ")]
+        private MonsterDrop monsterDrop;
         public NavMeshAgent Agent { get; private set; }
         public Animator Animator { get; private set; }
         [SerializeField]private AttackBox attackBox;
-        private MonsterDrop monsterDrop;
 
         [Header("IZombieState")]
         public IZombieState ChaseState { get; private set; }
@@ -32,17 +30,20 @@ namespace YourGame.AI
 
         private IZombieState currentState;
 
+        private WaitForSeconds dlay = new WaitForSeconds(0.1f);
+        private Coroutine HitDlayCoroutine;
         private PoolManager poolManager;
         private void Awake()
         {
             Animator = GetComponent<Animator>();
             Agent = GetComponent<NavMeshAgent>();
-            currentHealth = maxHp;
+            monsterDrop = GetComponent<MonsterDrop>();
             poolManager = PoolManager.Instance;
-            ChaseState = new ZombieChaseState(Random.Range(1,4));
+            ChaseState = new ZombieChaseState();
             DeadState = new ZombieDeadState();
             AttackState = new NomalZombieAttack();
-            monsterDrop = GetComponent<MonsterDrop>();
+            data = new ZombieData();
+            Init();
         }
         private void OnEnable()
         {
@@ -50,13 +51,29 @@ namespace YourGame.AI
             {
                 chaseTarget = GameManager.Instance.GetPlayer;
                 ChangeState(ChaseState);
+                Init();
             }
             else
             {
-                StartCoroutine(WaitForPlayers());
+                StartCoroutine(WaitForPlayers()); // 뭔가 리스폰 방법이있을때
             }
         }
+        public void Init()
+        {
+            int dayCount = GameManager.Instance.dayCount;
+            data.maxHp = (dayCount * 100f) + Mathf.Pow(dayCount, 1.2f) * 20f;
+            currentHealth = data.maxHp;
+            data.speed = Random.Range(1.5f, 4);
+            Agent.speed = data.speed;
 
+        }
+        public void Init(ZombieData data, int wave)
+        {
+            data.maxHp = (wave * data.maxHp) + Mathf.Pow(wave, 1.2f) * data.hpMultiplier;
+            currentHealth = data.maxHp;
+            data.speed = Random.Range(data.minSpeed, data.maxSpeed);
+            Agent.speed = data.speed;
+        }
         private IEnumerator WaitForPlayers()
         {
             yield return new WaitUntil(() => GameManager.Instance.PlayerList.Count > 0);
@@ -88,18 +105,24 @@ namespace YourGame.AI
         public void ApplyDamage(float damage)
         {
             currentHealth -= damage;
+            if (HitDlayCoroutine != null)
+            {
+                StopCoroutine(HitDlayCoroutine); // 기존 코루틴 종료
+                HitDlayCoroutine = null;
+            }
+
+            HitDlayCoroutine = StartCoroutine(SlowDownOnHit());
         }
 
         public void Die()
         {
-            Animator.SetTrigger("Die");
             monsterDrop.DropLoot();
             Invoke("ReturnZombie", 3);
             // 사망 애니메이션, 콜라이더 비활성화 등
         }
         public void ReturnZombie()
         {
-            currentHealth = maxHp;
+            currentHealth = data.maxHp;
             ChangeState(ChaseState);
             PoolManager.Instance.GetPool<Zombie>().ReturnToPool(this);
         }
@@ -108,9 +131,19 @@ namespace YourGame.AI
             if (attackBox.isInAttackRange && attackBox.targetPlayer != null)
             {
                 // 데미지 처리
-                attackBox.targetPlayer.GetComponent<Health>()?.TakeDamage(zombieDamege);
+                attackBox.targetPlayer.GetComponent<Health>()?.TakeDamage(data.attackDamage);
             }
         }
-
+        public IEnumerator SlowDownOnHit()
+        {
+            float currentSpeed = data.speed - 1;
+            while (data.speed >= currentSpeed)
+            {
+                Agent.speed = currentSpeed;
+                currentSpeed += 0.1f;
+                yield return dlay;
+            }
+            Agent.speed = data.speed;
+        }
     }
 }

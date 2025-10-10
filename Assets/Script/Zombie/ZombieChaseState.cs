@@ -1,18 +1,12 @@
+using System.Collections;
 using UnityEngine;
-
 namespace YourGame.AI
 {
     public class ZombieChaseState : IZombieState
     {
-        private readonly float speed;
-
-        public ZombieChaseState(float speed) => this.speed = speed;
-
         public void Enter(Zombie z)
         {
-            z.Agent.isStopped = false;
-            z.Agent.speed = speed;
-        
+            z.Agent.isStopped = false;    
         }
 
         public void Execute(Zombie z)
@@ -20,12 +14,13 @@ namespace YourGame.AI
            if(!z.ChaseTarget.isGrounded)
             {
                 z.Agent.SetDestination(z.ChaseTarget.jumpPos);
+                Debug.Log(z.ChaseTarget.isGrounded);
             }
             else
             {
-                z.Agent.SetDestination(z.ChaseTarget.transform.position);
+                z.Agent.SetDestination(z.ChaseTarget.transform.localPosition);
             }             
-            z.Animator.SetFloat("speed", speed);
+            z.Animator.SetFloat("speed", z.data.speed);
         }
 
         public void Exit(Zombie z)
@@ -36,12 +31,13 @@ namespace YourGame.AI
 
         public void OnHit(Zombie z, float damage, Zombie.HitType hitType)
         {
-            z.ApplyDamage(damage);
+            z.ApplyDamage(damage);        
             if (z.currentHealth <= 0f)
             {
                 z.ChangeState(z.DeadState);
                 return;
             }
         }
+    
     }
 }

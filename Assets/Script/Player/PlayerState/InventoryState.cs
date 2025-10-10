@@ -1,3 +1,4 @@
+using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 
 public class InventoryState : IPlayerState
@@ -10,14 +11,12 @@ public class InventoryState : IPlayerState
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        player.EnableMovement(false);
         InventoryUI.Instance.Show();
     }
 
     public void Exit()
     {
         InventoryUI.Instance.Show();
-        player.EnableMovement(true);
     }
 
     public void HandleInput()
@@ -26,5 +25,8 @@ public class InventoryState : IPlayerState
             player.ChangeState(player.NormalState);
     }
 
-    public void UpdateState() { }
+    public void UpdateState() 
+    {
+        player.ApplyGravity();
+    }
 }

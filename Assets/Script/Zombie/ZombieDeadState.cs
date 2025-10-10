@@ -6,6 +6,7 @@ namespace YourGame.AI
     {
         public void Enter(Zombie z)
         {
+            z.Animator.SetTrigger("Die");
             z.Die();        
         }
         public void Execute(Zombie z) { }

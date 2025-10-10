@@ -43,8 +43,7 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
 
         item.currentCount = _item.currentCount;
 
-        //test
-        currnetCountText.text = item.currentCount.ToString();
+        UpdateSlot();
     }
     /// <summary>
     /// 아이템 수량추가

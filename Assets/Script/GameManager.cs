@@ -12,7 +12,7 @@ public class GameManager : Singleton<GameManager>
     public static event Action<int> OnSpawnZombie;
 
     //³¯Â¥¿ë
-    private int dayCount = 1;
+    public int dayCount = 1;
 
     protected override void Awake()
     {
