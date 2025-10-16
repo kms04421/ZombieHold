@@ -14,8 +14,6 @@ public class SlotManager : Singleton<SlotManager>
 
     [SerializeField] private Slot[] uiSlots;
 
-    //SwitchSlot용 인덱스 임시
-    private int currentIndex = 0;
 
     protected override void Awake()
     {

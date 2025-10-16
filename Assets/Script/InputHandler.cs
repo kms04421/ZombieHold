@@ -35,7 +35,7 @@ public class InputHandler : MonoBehaviour
             SlotManager.Instance.UseUiSlot(slotIndex);
         }
     }
-    /// <summary>
+/*    /// <summary>
     /// 마우스 휠로 사용 슬롯 변경 
     /// </summary>
     /// <param name="context"></param>
@@ -47,7 +47,7 @@ public class InputHandler : MonoBehaviour
          //   SlotManager.Instance.SwitchSlot(nextIndex);
         }
     }
-    
+    */
     public void StartInteract()
     {
         if (interactable == null) return;

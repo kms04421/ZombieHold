@@ -1,5 +1,7 @@
 using System.Collections;
-using System.Xml;
+using System.Collections.Generic;
+using Unity.Cinemachine;
+using Unity.Mathematics;
 using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
@@ -14,20 +16,32 @@ public class PlayerController : MonoBehaviour
     public float gravity = -9.81f;
     private float xRecoilOffset = 0f; // Recoil이 줄 값
     private float yRecoilOffset = 0f; // 좌우 반동
-    [Header("Mouse Look")]
-    public Transform cameraTransform;
-    public float mouseSensitivity = 2f;
 
+    [Header("References")]
+    public CinemachineCamera vCam; // 최신 Cinemachine 3
+    private CinemachineBasicMultiChannelPerlin noiseComponent;
+
+    [Header("Mouse Look")]
+    public float mouseSensitivity = 2f;
+    private float xRotation = 0f;
+    
+    //컴퍼넌트용
     [HideInInspector] public Animator animator;
     private FrInverseKinematic frInverseKinematic;
     private CharacterController controller;
-    private DebuffHandler debuffHandler;
+    private buffHandler buffHandler;
     private Vector3 velocity;
 
     public bool isGrounded;
 
     [Header("무기 슬롯")]
     public GunBase currentGun;
+
+    [Header("Zoom Settings")]
+    public float zoomFOV = 30f;
+    private float defaultFOV;
+    public float zoomSpeed = 10f;
+    private bool isZooming = false;
 
     public Vector3 jumpPos; // 점프시 임시 저장위치 좀비추격에 필요
 
@@ -50,7 +64,14 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        debuffHandler = GetComponent<DebuffHandler>();
+        noiseComponent = vCam.GetComponentInChildren<CinemachineBasicMultiChannelPerlin>();
+        if (noiseComponent == null)
+            Debug.LogWarning("Noise component not found!");
+
+        defaultFOV = vCam.Lens.FieldOfView; // Lens에서 직접 FOV
+
+
+        buffHandler = GetComponent<buffHandler>();
         DeadState = new DeadState(this);
         NormalState = new NormalState(this);
         InventoryState = new InventoryState(this);
@@ -102,9 +123,9 @@ public class PlayerController : MonoBehaviour
             currentSpeed = playerData.WalkSpeed;
 
         // 디버프
-        if (debuffHandler != null)
+        if (buffHandler != null)
         {
-            if (debuffHandler.IsStunned())
+            if (buffHandler.IsStunned())
             {
                 // 행동 불가 처리
                 currentSpeed = 0f;
@@ -112,7 +133,7 @@ public class PlayerController : MonoBehaviour
             else
             {
                 // 속도 적용
-                currentSpeed = currentSpeed * debuffHandler.GetSpeedModifier();
+                currentSpeed = currentSpeed * buffHandler.GetSpeedModifier();
             }
         }
         // 디버프
@@ -159,22 +180,57 @@ public class PlayerController : MonoBehaviour
     }
     public void LookAround()
     {
+        // 마우스 입력
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-        // 마우스 Y + 반동 가산
-        PlayerStateData.xRotation -= (mouseY - xRecoilOffset);
-        xRecoilOffset = 0f; // 한 번 적용했으니 초기화
-
-        PlayerStateData.xRotation = Mathf.Clamp(PlayerStateData.xRotation, -90f, 90f);
-
-        // 좌우 회전 적용 (마우스 + 반동)
-        float totalYaw = mouseX + yRecoilOffset;
-        transform.Rotate(Vector3.up * totalYaw);
-        yRecoilOffset = 0f;
-
-        cameraTransform.localRotation = Quaternion.Euler(PlayerStateData.xRotation, 0f, 0f);
+        // 카메라 위/아래 회전
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+        vCam.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+     
+        // 플레이어 몸체 좌/우 회전
+        transform.Rotate(Vector3.up * mouseX);
     }
+    //추가 start
+
+    // 흔들기
+    public void ShakeCamera(float amplitude, float frequency, float duration)
+    {
+        Debug.Log("ShakeCamera");
+        StartCoroutine(DoShake(amplitude, frequency, duration));
+    }
+
+    private IEnumerator DoShake(float amplitude, float frequency, float duration)
+    {
+
+        // 최신 버전에서는 m_AmplitudeGain 대신 AmplitudeGain 사용
+        noiseComponent.AmplitudeGain = amplitude;
+        noiseComponent.FrequencyGain = frequency;
+
+        float timer = 0f;
+        while (timer < duration)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        noiseComponent.AmplitudeGain = 0f;
+        noiseComponent.FrequencyGain = 0f;
+    }
+    #region Zoom
+    public void SetZoom(bool zoom)
+    {
+        isZooming = zoom;
+    }
+
+    private void HandleZoom()
+    {
+        float targetFOV = isZooming ? zoomFOV : defaultFOV;
+        vCam.Lens.FieldOfView = Mathf.Lerp(vCam.Lens.FieldOfView, targetFOV, Time.deltaTime * zoomSpeed);
+    }
+    #endregion
+    //추가 end
 
     // 외부에서 반동을 주입
     public void ApplyRecoil(float verticalAmount, float horizontalAmount)
@@ -241,11 +297,15 @@ public class PlayerController : MonoBehaviour
     /// <param name="context"></param>
     public void OnFire(bool isShoot)
     {
+      
         if (currentState != NormalState) return;
         if (isReload) return;
 
         if (isShoot)
+        {
+            ShakeCamera(0.7f, 0.7f, 0.1f);
             currentGun?.StartFiring();
+        }    
         else
             currentGun?.StopFiring();
 
@@ -270,7 +330,6 @@ public class PlayerController : MonoBehaviour
                 isReload = false;
 
         }
-
     }
     /// <summary>
     /// 총기 변경
