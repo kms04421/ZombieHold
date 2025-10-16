@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 /// <summary>
 /// 제네릭 오브젝트 풀 기본 클래스.
@@ -8,7 +9,9 @@ using UnityEngine;
 /// <typeparam name="T">풀에서 관리할 컴포넌트 타입 (예: ItemDrop, Bullet 등)</typeparam>
 public abstract class ObjectPoolBase<T> : MonoBehaviour where T : Component
 {
+    [Header("고정 프리펩")]
     [SerializeField] protected T prefab;
+    [Header("풀 생산량")]
     [SerializeField] private int poolSize = 20;
     [HideInInspector]public int PoolSize
     {

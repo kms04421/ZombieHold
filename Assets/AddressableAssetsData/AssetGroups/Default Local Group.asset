@@ -15,22 +15,16 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: 52f525b79cfb7af4792a48e289fc7e4e
   m_SerializeEntries:
-  - m_GUID: 180111900950c2244b3d812913738130
-    m_Address: Test/Black
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Test
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c8215d7b30d2cfa47b6c6c3f364077ee
-    m_Address: Test/Red
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Test
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ea18e21d9efc71443879ef23defa87eb
     m_Address: Assets/Prefab/DropBox.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f4c5b5bb968e67c40a225b99204e536b
+    m_Address: Monsters/Zombie
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Monster
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 71c371348dc2b9044944d899b4268b9e, type: 2}

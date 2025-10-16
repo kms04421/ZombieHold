@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class DropBoxPool : ObjectPoolBase<ItemDrop>
 {
+    [Header("inputHandler플레이어 상호작용용")]
     [SerializeField]private InputHandler inputHandler;
 
     private void Awake()

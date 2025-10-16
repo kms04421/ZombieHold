@@ -26,7 +26,6 @@ public class MonsterDrop : MonoBehaviour
     /// </summary>
     private void SpawnItem(ItemSO item, int dropCount)
     {
-        Debug.Log("아이템 생성");
         // 풀에서 가져오기
         var pool = PoolManager.Instance.GetPool<ItemDrop>();
         if (pool == null) return;

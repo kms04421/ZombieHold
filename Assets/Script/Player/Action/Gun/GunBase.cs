@@ -54,7 +54,6 @@ public class GunBase : MonoBehaviour
     protected virtual void Start()
     {
         inventory = SlotManager.Instance.inventory;
-        SetGun();
     }
 
     protected virtual void Update()
@@ -181,15 +180,14 @@ public class GunBase : MonoBehaviour
         }
         return "";
     }
-
-    public void SetGun()
+    /// <summary>
+    /// ÃÑ¾Ë id¹ÝÈ¯
+    /// </summary>
+    /// <returns></returns>
+    public string GetGunAmmoId()
     {
-        string ammoID = GetGunAmmoId(gunData.type);
-      
-        int total = inventory.HasItemCount(ammoID);
-     
-        PlayerUI.Instance.SetCurrentAmmo(CurrentAmmo);
-        PlayerUI.Instance.SetAllAmmo(total);
+        return GetGunAmmoId(gunData.type);
+
     }
 
     public void Magazine()

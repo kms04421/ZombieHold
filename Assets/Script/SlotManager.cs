@@ -16,10 +16,15 @@ public class SlotManager : Singleton<SlotManager>
 
     //SwitchSlot용 인덱스 임시
     private int currentIndex = 0;
-    
+
+    protected override void Awake()
+    {
+        base.Awake();
+        inventory = new Inventory();
+    }
     private void Start()
     {
-        inventory = new Inventory();
+    
         int slotid = 0;
         for (int i = 0; i < slotCount; i++)
         {
@@ -34,6 +39,7 @@ public class SlotManager : Singleton<SlotManager>
             slotid = slotid + 1;
             inventory.slots.Add(slotid.ToString(), uiSlots[i]);
         }
+        SetPlayerUI();
     }
     /*    public void AssignItem(int index, Slot item)
         {
@@ -65,6 +71,9 @@ public class SlotManager : Singleton<SlotManager>
     /// </summary>
     public void SetPlayerUI()
     {
-        playerController.currentGun.SetGun();
+        int total = inventory.HasItemCount(playerController.currentGun.GetGunAmmoId());
+
+        PlayerUI.Instance.SetCurrentAmmo(playerController.currentGun.CurrentAmmo);
+        PlayerUI.Instance.SetAllAmmo(total);
     }
 }

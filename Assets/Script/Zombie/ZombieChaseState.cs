@@ -14,7 +14,6 @@ namespace YourGame.AI
            if(!z.ChaseTarget.isGrounded)
             {
                 z.Agent.SetDestination(z.ChaseTarget.jumpPos);
-                Debug.Log(z.ChaseTarget.isGrounded);
             }
             else
             {

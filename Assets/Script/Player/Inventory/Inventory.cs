@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Inventory : MonoBehaviour {
+public class Inventory {
 
     [SerializeField] public Dictionary<string, Slot> slots = new Dictionary<string, Slot>();
 
