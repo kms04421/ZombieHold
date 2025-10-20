@@ -19,7 +19,7 @@ public class Box : Interactable
     {
         miniGame = MiniGameController.Instance;
         answerNumbers = miniGame.newAnswerNumbers();
-        compensationItem = ItemDatabase.Instance.GetRandomItems(3, 6);
+        compensationItem = ItemDatabase.Instance.GetRandomItems();
     }
     private void OnDisable()
     {

@@ -22,4 +22,11 @@ public class ItemSO : ScriptableObject
     public int minDropCount = 1;   // 최소 드랍 수량
     [Min(1)]
     public int maxDropCount = 1;   // 최대 드랍 수량
+
+    [Header("랜덤 획득 아이템 수량")]
+    [Range(0, 100)]
+    public int minRandomItemCount = 0;
+
+    [Range(0, 100)]
+    public int maxRandomItemCount = 1;
 }
