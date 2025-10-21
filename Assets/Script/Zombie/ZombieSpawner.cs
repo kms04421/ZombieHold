@@ -37,7 +37,8 @@ public class ZombieSpawner : MonoBehaviour
         while (zombieCount > 0)
         {
             zombieCount--;
-            Zombie zombie = poolManager.GetPool<Zombie>().Get(); //풀에서 좀비 가져옴
+            yield return new WaitUntil(() => poolManager.GetPool<Zombie>().GetPoolCount() > 0);
+            Zombie zombie = poolManager.GetPool<Zombie>().Get(); //풀에서 좀비 가져옴          
             zombie.transform.localPosition = transform.localPosition;
             zombie.transform.localRotation = Quaternion.identity;
             zombie.gameObject.SetActive(true);

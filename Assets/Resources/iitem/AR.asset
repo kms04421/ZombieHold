@@ -19,3 +19,8 @@ MonoBehaviour:
   stackable: 0
   maxStack: 1
   testCount: 0
+  dropChance: 0
+  minDropCount: 1
+  maxDropCount: 1
+  minRandomItemCount: 1
+  maxRandomItemCount: 1

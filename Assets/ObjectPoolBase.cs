@@ -29,7 +29,8 @@ public abstract class ObjectPoolBase<T> : MonoBehaviour where T : Component
         }
         else
         {
-            return Instantiate(prefab, transform);
+
+            return null;
         }
     }
 
@@ -39,5 +40,9 @@ public abstract class ObjectPoolBase<T> : MonoBehaviour where T : Component
         pool.Enqueue(obj);
     }
 
+    public virtual int GetPoolCount()
+    {
+        return pool.Count;
+    }
     protected abstract void InitializePool();
 }

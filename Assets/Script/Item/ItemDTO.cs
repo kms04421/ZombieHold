@@ -3,7 +3,7 @@ using System.Collections.Generic;
 [System.Serializable]
 public class ItemDTO
 {
-    public int id;
+    public string id;
     public string itemName;
     public int stackable;
     public int maxStack;
@@ -13,5 +13,5 @@ public class ItemDTO
 [System.Serializable]
 public class ItemListWrapper
 {
-    public List<ItemDTO> items;
+    public List<ItemDTO> item;
 }

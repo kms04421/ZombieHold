@@ -1,11 +1,11 @@
 using UnityEngine;
 using YourGame.AI;
 
-public class NomalZombieAttack : IZombieState
+public class ExplosionZombieAttack : IZombieState
 {
     public void Enter(Zombie z)
     {
-        z.Animator.SetBool("Attack", true);
+       z.gameObject.SetActive(false);
     }
     public void Execute(Zombie z) { }
     public void Exit(Zombie z) { }
@@ -18,5 +18,4 @@ public class NomalZombieAttack : IZombieState
             return;
         }
     }
-    
 }

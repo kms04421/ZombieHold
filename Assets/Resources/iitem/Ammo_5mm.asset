@@ -22,3 +22,5 @@ MonoBehaviour:
   dropChance: 1
   minDropCount: 2
   maxDropCount: 10
+  minRandomItemCount: 1
+  maxRandomItemCount: 30

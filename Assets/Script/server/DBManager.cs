@@ -16,22 +16,18 @@ public class DBManager : MonoBehaviour
     }
     IEnumerator LoadItems(System.Action<List<Item>> onCompleted)
     {
-        using (UnityWebRequest request = UnityWebRequest.Get("http://localhost:3000/"))
+        using (UnityWebRequest request = UnityWebRequest.Get("http://localhost:3000/item"))
         {
             yield return request.SendWebRequest();
             string json = request.downloadHandler.text;
-            // Debug.Log("json 파싱" + json);
-            string safeJson = EnsureJsonObject(json);
-
-            ItemListWrapper wrapper = JsonUtility.FromJson<ItemListWrapper>(safeJson);
-            if (wrapper == null || wrapper.items == null)
+            ItemListWrapper wrapper = JsonUtility.FromJson<ItemListWrapper>(json);
+            if (wrapper == null || wrapper.item == null)
             {
                 Debug.LogError("파싱 실패");
                 yield break;
             }
-
             List<Item> itemList = new List<Item>();
-            foreach (var dto in wrapper.items)
+            foreach (var dto in wrapper.item)
             {
                 ItemSO template = itemSOs.FirstOrDefault(x => x.id.Equals(dto.id));
                 if (template == null)
@@ -47,7 +43,32 @@ public class DBManager : MonoBehaviour
             onCompleted?.Invoke(itemList); //  콜백으로 리스트 전달
         }
     }
-
+    public void DBZombiesRequest(System.Action<List<ZombieData>> onCompleted)
+    {
+        StartCoroutine(LoadZombie(onCompleted));
+    }
+    IEnumerator LoadZombie(System.Action<List<ZombieData>> onCompleted)
+    {
+        using (UnityWebRequest request = UnityWebRequest.Get("http://localhost:3000/zombie"))
+        {
+            yield return request.SendWebRequest();
+            string json = request.downloadHandler.text;
+            ZombieListWrapper wrapper = JsonUtility.FromJson<ZombieListWrapper>(json);
+            if (wrapper == null || wrapper.zombie == null)
+            {
+                Debug.LogError("파싱 실패");
+                yield break;
+            }
+            List<ZombieData> ZombieList = new List<ZombieData>();
+            foreach (var dto in wrapper.zombie)
+            {
+                ZombieData newZombieData = new ZombieData(dto);
+                //여기서 db수정할데이터 추가
+                ZombieList.Add(newZombieData);
+            }
+            onCompleted?.Invoke(ZombieList); //  콜백으로 리스트 전달
+        }
+    }
     IEnumerator PostRequest()
     {
         string json = "{\"player\":\"Unity\",\"score\":100}";
@@ -60,13 +81,6 @@ public class DBManager : MonoBehaviour
             yield return www.SendWebRequest();
             Debug.Log(www.downloadHandler.text);
         }
-    }
-    private string EnsureJsonObject(string json)
-    {
-        string trimmed = json.TrimStart();
-        if (trimmed.StartsWith("["))
-            return "{\"items\":" + json + "}";
-        return json;
     }
 
 }

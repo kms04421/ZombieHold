@@ -4,19 +4,24 @@ public class ItemDatabase : Singleton<ItemDatabase>
 {
     public List<Item> allItems;
     public DBManager dBManager;
+
+    private void Start()
+    {
+        LoadItemsFromDB();
+    }
     public void LoadItemsFromDB()
     {
         dBManager.DBItemsRequest((serverItems) =>
         {
             if(serverItems == null || serverItems.Count == 0)
             {
-                Debug.LogError("아이템 정보를 가지고 오지 못했습니다");
+                Debug.Log("아이템 정보를 가지고 오지 못했습니다");
                return;
             }
 
             allItems = serverItems;
         });
-       
+      
     }
 
     public List<Item> GetRandomItems() // 수정필요

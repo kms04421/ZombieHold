@@ -2703,6 +2703,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 5800956889753122077, guid: f4c5b5bb968e67c40a225b99204e536b, type: 3}
   poolSize: 20
+  DBManager: {fileID: 1511438906}
 --- !u!1 &68639444
 GameObject:
   m_ObjectHideFlags: 0
@@ -35946,7 +35947,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1275339159
 Transform:
   m_ObjectHideFlags: 0
@@ -41399,7 +41400,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1511438905}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46cb1a9cb584c3a40ba4c4e608749eae, type: 3}
   m_Name: 

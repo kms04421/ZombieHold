@@ -6,8 +6,11 @@ using YourGame.AI;
 
 public class MonsterPool : ObjectPoolBase<Zombie>
 {
+    private List<ZombieData> zombieDatas;
+    [SerializeField] private DBManager DBManager;
     private void Awake()
     {
+        zombieDatas = new List<ZombieData>();
         InitializePool();
         PoolManager.Instance.RegisterPool(this);
     }
@@ -16,11 +19,32 @@ public class MonsterPool : ObjectPoolBase<Zombie>
     /// </summary>
     protected override void InitializePool()
     {
-        // 서버나 설정에서 몬스터 이름을 받아옴
-        string monsterKey = "Monsters/" + GetMonsterNameFromServer();
+        GetMonsterNameFromServer((server) =>
+        {
+            if (server == null || server.Count == 0)
+            {
+                Debug.Log("좀비 데이터가 없습니다");
+                return;
+            }
+            zombieDatas = server;
 
-        // Addressables로 프리팹을 비동기로 로드
-        Addressables.LoadAssetAsync<GameObject>(monsterKey).Completed += OnMonsterLoaded;
+            for (int i = 0; i < 1; i++)
+            {
+                int index = i;
+                string monsterKey = "Monsters/" + zombieDatas[index].name;
+
+                Addressables.LoadAssetAsync<GameObject>(monsterKey).Completed += (handle) =>
+                {
+                    GameObject prefab = handle.Result;
+                    if (prefab != null)
+                        OnMonsterLoaded(handle);
+                    else
+                        Debug.Log(zombieDatas[index].name + "프리팹 없습니다");
+
+                };
+            }
+
+        });
     }
     /// <summary>
     /// 로드한 비동기 오브젝트로 풀 채워둠
@@ -41,17 +65,18 @@ public class MonsterPool : ObjectPoolBase<Zombie>
         for (int i = 0; i < PoolSize; i++)
         {
             Zombie zombie = Instantiate(loadedPrefab, transform).GetComponent<Zombie>();
+            zombie.data = zombieDatas[0];
             zombie.gameObject.SetActive(false);
             pool.Enqueue(zombie);
         }
     }
     /// <summary>
-    /// 서버에서 이름 가져오기
+    /// 서버에서 정보 가져오기
     /// </summary>
     /// <returns></returns>
-    private string GetMonsterNameFromServer()
+    private void GetMonsterNameFromServer(System.Action<List<ZombieData>> onCompleted)
     {
         // 서버에서 몬스터 이름받기
-        return "Zombie";
+        DBManager.DBZombiesRequest(onCompleted);
     }
 }

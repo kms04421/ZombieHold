@@ -39,10 +39,24 @@ namespace YourGame.AI
             Agent = GetComponent<NavMeshAgent>();
             monsterDrop = GetComponent<MonsterDrop>();
             poolManager = PoolManager.Instance;
+
             ChaseState = new ZombieChaseState();
             DeadState = new ZombieDeadState();
-            AttackState = new NomalZombieAttack();
-            data = new ZombieData();
+          
+            switch (data.atkType)
+            {
+                case "Nomal":
+                    AttackState = new NomalZombieAttack();
+                    break;
+                case "Explosion":
+                    AttackState = new ExplosionZombieAttack();
+                    Debug.Log("Explosion");
+                    break;
+                default:
+                    Debug.Log(data.atkType);
+                    Debug.Log("¾øÀ½");
+                    break;
+            }
             Init();
         }
         private void OnEnable()
