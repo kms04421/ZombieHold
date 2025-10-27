@@ -1,53 +1,32 @@
 using UnityEngine;
-using SocketIOClient;
-using System.Threading.Tasks;
+using WebSocketSharp;
+
 
 public class MultiClient : MonoBehaviour
 {
-    private SocketIOUnity socket;
-    public string roomName = "room1";
+    private WebSocket ws;
 
-    async void Start()
+    void Start()
     {
-        socket = new SocketIOUnity("http://localhost:3000", new SocketIOOptions());
+        ws = new WebSocket("ws://localhost:3000");
 
-        socket.OnConnected += (sender, e) =>
+        ws.OnOpen += (sender, e) =>
         {
-            Debug.Log("멀티 서버 연결됨!");
-            socket.Emit("joinRoom", roomName);
+            Debug.Log("서버 연결 성공!");
+            ws.Send("Hello Server from Unity!");
         };
 
-        socket.On("playerJoined", (res) =>
+        ws.OnMessage += (sender, e) =>
         {
-            string id = res.GetValue<string>();
-            Debug.Log("다른 플레이어 입장: " + id);
-        });
+            Debug.Log("서버 메시지 수신: " + e.Data);
+        };
 
-        socket.On("playerMove", (res) =>
-        {
-            var data = res.GetValue<PlayerData>();
-            Debug.Log($"플레이어 이동 - {data.id}: ({data.x},{data.y},{data.z})");
-            // TODO: 다른 플레이어 위치 갱신
-        });
-
-        socket.On("playerLeft", (res) =>
-        {
-            string id = res.GetValue<string>();
-            Debug.Log("플레이어 퇴장: " + id);
-        });
-
-        await socket.ConnectAsync();
+        ws.Connect();
     }
 
-    public void SendMove(Vector3 pos)
+    void OnDestroy()
     {
-        socket.Emit("playerMove", new PlayerData
-        {
-            room = roomName,
-            id = socket.Id,
-            x = pos.x,
-            y = pos.y,
-            z = pos.z
-        });
+        if (ws != null && ws.IsAlive)
+            ws.Close();
     }
 }

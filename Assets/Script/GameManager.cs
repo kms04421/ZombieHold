@@ -8,6 +8,8 @@ public class GameManager : Singleton<GameManager>
     [Header("플레이어저장용")]
     public List<PlayerController> PlayerList;
 
+    [Header("보급상자")]
+    [SerializeField] private GameObject box;
     //좀비 스포너 구독용
     public static event Action<int> OnSpawnZombie;
 
@@ -23,6 +25,7 @@ public class GameManager : Singleton<GameManager>
     {
         StartCoroutine(WaveStart());
         OnSpawnZombie?.Invoke(1);
+        Invoke("OnBox", 2);
     }
     /// <summary>
     /// 플레이어 PlayerList에 세팅
@@ -64,5 +67,11 @@ public class GameManager : Singleton<GameManager>
 
         }
     }
-
+    /// <summary>
+    /// 박스 활성화 (조건생각중)
+    /// </summary>
+    private void OnBox()
+    {
+        box.SetActive(true);
+    }
 }

@@ -65,7 +65,7 @@ public class FrInverseKinematic : MonoBehaviour
     /// IK활성화 비활성화
     /// </summary>
     /// <param name="active"></param>
-    public void SetIKActive(bool active)
+    public void SetIKReloadActive(bool active)
     {
 
         orgParnt = testGun.parent;
@@ -80,6 +80,14 @@ public class FrInverseKinematic : MonoBehaviour
         }
 
             
+        enableIK = active;
+    }
+    /// <summary>
+    /// IK 비활성화
+    /// </summary>
+    /// <param name="active"></param>
+    public void SetIK(bool active)
+    {
         enableIK = active;
     }
     // 왼손 IK 개별 제어

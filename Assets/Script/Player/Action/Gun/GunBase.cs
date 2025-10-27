@@ -12,7 +12,7 @@ public class GunBase : MonoBehaviour
     [Header("총 데이터")]
     public GunData gunData;
     [Header("총구 위치")]
-    [SerializeField] private Transform muzzPos;
+    [SerializeField] private Transform muzzPos; 
 
     private int _currentAmmo; //현재총알 
     public int CurrentAmmo // 현재 총알
@@ -26,29 +26,28 @@ public class GunBase : MonoBehaviour
 
     //총기반동 스크립트
     public RecoilController recoilController;
+ 
+    protected bool isFiring = false; // 연발용
+    private float nextFireTime = 0f; // 연발 단발용
 
-    protected PlayerController playerController;
-    protected bool isFiring = false;
-    protected Coroutine muzzleCoroutine;
+    protected GameObject flash; // 총기 이팩트
+    #region 캐싱 & 컴퍼넌트
+
+    protected Coroutine muzzleCoroutine; // 총기 이팩트 코루틴
     protected AudioSource audioSource;
-    protected Transform cameraTransform;
-    protected GameObject flash;
-    protected Inventory inventory;
+    protected Inventory inventory; // 인벤토리 
+    #endregion
 
-    private float nextFireTime = 0f;
-
-    [Header("탄창 용")]
-    private Transform orgMagazineParnt;
-    private Vector3 orgMagazinePos;
-    private Quaternion orgMagazineRot;
-    public Transform magazine;
-    public Transform leftHandPos;
+    [Header("탄창 용")] // 이것도 수정 필요
+    private Transform orgMagazineParnt; // 원래 탄창부모 위치 저장용
+    private Vector3 orgMagazinePos; // 원래 탄창 위치 저장용
+    private Quaternion orgMagazineRot; // 원래 탄창 로테이션 저장용
+    public Transform magazine; // 탄창 
 
     protected virtual void Awake()
     {
         CurrentAmmo = gunData.maxAmmo;
         audioSource = GetComponent<AudioSource>();
-        cameraTransform = Camera.main.transform;
     }
 
     protected virtual void Start()
@@ -64,9 +63,10 @@ public class GunBase : MonoBehaviour
             nextFireTime = Time.time + gunData.fireRate;
         }
     }
-    public void SetPlayerController(PlayerController _playerController)
+
+    protected virtual GunBase Get() 
     {
-        playerController = _playerController;
+        return this;
     }
     /// <summary>
     /// 총기 발사전 시작함수 (연발 단발 구분을 위해 사용)
@@ -92,9 +92,14 @@ public class GunBase : MonoBehaviour
     /// </summary>
     public virtual void Shoot()
     {
+        Debug.Log("슛");
         if (CurrentAmmo == 0) return;
+        Debug.Log("슛0   ");
+        // Ray 생성
+        Ray ray = new Ray(muzzPos.position, -muzzPos.right);
 
-        Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+        // Ray 시각화 (씬에서만 보임)
+        Debug.DrawRay(ray.origin, ray.direction * gunData.range, Color.red, 1f);
         if (Physics.Raycast(ray, out RaycastHit hit, gunData.range))
         {
             var hitbox = hit.collider.GetComponent<HitBox>();
@@ -116,6 +121,7 @@ public class GunBase : MonoBehaviour
         CurrentAmmo--;
         PlayerUI.Instance.SetCurrentAmmo(CurrentAmmo);
     }
+
     /// <summary>
     /// 총구 이펙트 효과
     /// </summary>
@@ -131,13 +137,17 @@ public class GunBase : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         flash.SetActive(false);
     }
+
     /// <summary>
     /// 재장전
     /// </summary>
     public bool Reload()
     {
-        string ammoID = GetGunAmmoId(gunData.type);
-
+        string ammoID = GetAmmoId();
+        if(inventory == null)
+        {
+            inventory = SlotManager.Instance.inventory;
+        }
         int total = inventory.HasItemCount(ammoID);   // 인벤토리에 있는 총알 수
         if(total == 0 || CurrentAmmo == gunData.maxAmmo) return false;
         int needed = gunData.maxAmmo - CurrentAmmo;   // 탄창을 채우기 위해 필요한 총알 수
@@ -161,10 +171,13 @@ public class GunBase : MonoBehaviour
         PlayerUI.Instance.SetAllAmmo(total);
         return true;
     }
-
-    public string GetGunAmmoId(GunType gunType)
+    /// <summary>
+    /// 총알 id반환
+    /// </summary>
+    /// <returns></returns>
+    public string GetAmmoId()
     {
-        switch (gunType)
+        switch (gunData.type)
         {
             case GunType.None:
                 break;
@@ -180,17 +193,12 @@ public class GunBase : MonoBehaviour
         }
         return "";
     }
+  
+ 
     /// <summary>
-    /// 총알 id반환
+    /// 장전 탄창 손으로 부모 변경
     /// </summary>
-    /// <returns></returns>
-    public string GetGunAmmoId()
-    {
-        return GetGunAmmoId(gunData.type);
-
-    }
-
-    public void Magazine()
+    public void Magazine(Transform leftHandPos)
     {
         orgMagazineParnt = magazine.parent;
         orgMagazinePos = magazine.localPosition;
@@ -199,6 +207,9 @@ public class GunBase : MonoBehaviour
         magazine.localPosition = Vector3.zero;
         magazine.localRotation = Quaternion.identity;
     }
+    /// <summary>
+    /// 장전탄창 원래 위치로
+    /// </summary>
     public void ReturnMagazine()
     {
         magazine.SetParent(orgMagazineParnt);

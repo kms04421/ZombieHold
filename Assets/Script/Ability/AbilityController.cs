@@ -1,21 +1,53 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AbilityController : MonoBehaviour
 {
     private int skillPoint = 0;
+    [Header("플레이어 컨트롤러")]
+    [SerializeField] private PlayerController playerController; 
+    
+    [Header("DB메니져")]
+    [SerializeField] private DBManager dbManager; // db메니져
 
-    [SerializeField] private PlayerController playerController;
+    private Dictionary<string, AbilityDTO> abilitys; // 어빌리티 정보 저장용
+    private PlayerData playerData; //적용할 능력치 저장용
+    private AbilitySlot slot; // 현재 클릭한 슬롯정보 저장용
 
-    private PlayerData playerData;
-    private AbilitySlot slot;
+    public event Action OnDBLoaded; //DB 데이터가 성공적으로 로드된 시점에 데이터 세팅
 
+    private void Awake()
+    {
+        abilitys = new Dictionary<string, AbilityDTO>();
+        dbManager.DBAbilityRequest((server) =>
+        {
+            if(server == null || server.Count == 0)
+            {
+                return;
+            }
+
+            for(int i =0; i < server.Count; i++)
+            {
+                AbilityDTO abilityDTO = server[i];
+                abilitys.Add(abilityDTO.Name, abilityDTO);
+            }
+            OnDBLoaded?.Invoke();//슬롯에 데이터 세팅
+        });
+    }
     private void Start()
     {
-        skillPoint = 1; //테스트용
+        skillPoint = 10; //테스트용
         playerData = new PlayerData();
         playerData.ResetPlayData();
         PlayerUI.Instance.SetAbilityPoint(skillPoint);
     }
+
+    public AbilityDTO GetAbilitys(string name)
+    {
+        return abilitys[name];
+    }
+
     /// <summary>
     /// Player에 능력치 적용
     /// </summary>

@@ -23,7 +23,7 @@ public class MonsterPool : ObjectPoolBase<Zombie>
         {
             if (server == null || server.Count == 0)
             {
-                Debug.Log("좀비 데이터가 없습니다");
+                Debug.Log("좀비 데이터 없습니다");
                 return;
             }
             zombieDatas = server;

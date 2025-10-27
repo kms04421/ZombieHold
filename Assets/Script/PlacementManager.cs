@@ -77,7 +77,7 @@ public class PlacementManager : Singleton<PlacementManager>
     {
         return new Vector3(
             Mathf.Round(pos.x),
-            Mathf.Round(pos.y),
+            Mathf.Round(pos.y-0.3f),
             Mathf.Round(pos.z)
         );
     }

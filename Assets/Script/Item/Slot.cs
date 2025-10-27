@@ -8,6 +8,9 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
     [Header("아이템 스크리터블 오브젝트")]
     public ItemSO test;
 
+    [Header("슬롯의 타입")]
+    public ItemType slotType;
+
     [Header("아이템")]
     public Item item;
 
@@ -90,11 +93,29 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
     /// <summary>
     /// 슬롯 사용
     /// </summary>
-    public void Use()
+    public void Use(PlayerController player)
     {
         if (item == null || item.currentCount <= 0) return;
+        switch(item.template.type)
+        {
+            case ItemType.Placeable:
+                PlacementManager.Instance.StartPlacement(item.template.prefab, OnPlacementResult);
+                player.UnequipGun();
+                SlotManager.Instance.SetPlayerUI();
+                break;
+            case ItemType.Weapon:
+                GunBase gunBase = SlotManager.Instance.GetWeaponTrans(item.template.name);
+                Debug.Log(item.template.name);
+                if (gunBase != null)
+                {                 
+                    player.EquipGun(gunBase);
+                    SlotManager.Instance.SetPlayerUI();
+                }
 
-        PlacementManager.Instance.StartPlacement(item.template.prefab, OnPlacementResult);
+                break;
+        }
+  
+     
     }
 
     // 설치 결과 처리
@@ -147,6 +168,14 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
         Slot fromSlot = eventData.pointerDrag?.GetComponent<Slot>();
         if (fromSlot != null && fromSlot != this)
         {
+            if (slotType != fromSlot.item.template.type)
+            {
+                if(slotType != ItemType.All)
+                {
+                    return;
+                }
+
+            }
             if (fromSlot.item != null && item != null && fromSlot.item.template.id == item.template.id)
             {
                 int total = fromSlot.item.currentCount + item.currentCount;

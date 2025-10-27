@@ -109,6 +109,39 @@
                 },
                 {
                     "name": "",
+                    "id": "a1d5a11f-383a-4ba2-ab4a-bd217c0a155b",
+                    "path": "<Keyboard>/4",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SlotInput",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8118a658-d442-4af1-a659-b3ed4772698c",
+                    "path": "<Keyboard>/5",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SlotInput",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6cfb8b85-9fd2-485c-99a3-c37cd0177fa7",
+                    "path": "<Keyboard>/6",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SlotInput",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "1ce724d0-70d0-4025-8e4d-5d82ed1610fd",
                     "path": "<Keyboard>/i",
                     "interactions": "Press",

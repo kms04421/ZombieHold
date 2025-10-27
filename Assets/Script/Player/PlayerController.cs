@@ -7,22 +7,24 @@ public class PlayerController : MonoBehaviour
 {
     [Header("PlayeData")]
     public PlayerData playerData;
+
+    [Header("PlayerHand")]
+    [SerializeField] private Transform LeftHend;
+    [SerializeField] private Transform RightHend;
    
     [Header("GunData")]
     public GameObject weapon;
 
     [Header("Movement")]
     private const float jumpForce = 1f;
-    public float gravity = -9.81f;
-    private float xRecoilOffset = 0f; // Recoil이 줄 값
-    private float yRecoilOffset = 0f; // 좌우 반동
+    private float gravity = -9.81f;
 
     [Header("References")]
     public CinemachineCamera vCam; // 최신 Cinemachine 3
     private CinemachineBasicMultiChannelPerlin noiseComponent;
 
     [Header("Mouse Look")]
-    public float mouseSensitivity = 2f;
+    private float mouseSensitivity = 2f; // 마우스 감도
     private float xRotation = 0f;
     
     //컴퍼넌트용
@@ -32,7 +34,7 @@ public class PlayerController : MonoBehaviour
     private buffHandler buffHandler;
     private Vector3 velocity;
 
-    public bool isGrounded;
+    [HideInInspector]public bool isGrounded;
 
     [Header("무기 슬롯")]
     public GunBase currentGun;
@@ -76,7 +78,6 @@ public class PlayerController : MonoBehaviour
         NormalState = new NormalState(this);
         InventoryState = new InventoryState(this);
         MenuState = new MenuState(this);
-        SetWeapon();
         ChangeState(NormalState);
     }
 
@@ -194,10 +195,14 @@ public class PlayerController : MonoBehaviour
     }
     //추가 start
 
-    // 흔들기
+   /// <summary>
+   /// 화면 흔들림 
+   /// </summary>
+   /// <param name="amplitude"></param>
+   /// <param name="frequency"></param>
+   /// <param name="duration"></param>
     public void ShakeCamera(float amplitude, float frequency, float duration)
     {
-        Debug.Log("ShakeCamera");
         StartCoroutine(DoShake(amplitude, frequency, duration));
     }
 
@@ -232,12 +237,6 @@ public class PlayerController : MonoBehaviour
     #endregion
     //추가 end
 
-    // 외부에서 반동을 주입
-    public void ApplyRecoil(float verticalAmount, float horizontalAmount)
-    {
-        xRecoilOffset -= verticalAmount;
-        yRecoilOffset += horizontalAmount;
-    }
     /// <summary>
     /// 캐릭터 컨트롤로 활성화 비활성화 여부
     /// </summary>
@@ -249,21 +248,12 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     /// <summary>
-    /// 무기 장착 시
-    /// </summary>
-    /// <param name="go"></param>
-    public void SetWeapon()
-    {
-        currentGun.SetPlayerController(this);
-    }
-
-    /// <summary>
     /// 재장전 애니메이션 실행
     /// </summary>
     public void ReloadAnimaion()
     {
         // IK 끄기
-        frInverseKinematic.SetIKActive(false);
+        frInverseKinematic.SetIKReloadActive(false);
         // 리로드 애니메이션 실행
         animator.SetTrigger("Reload");
   
@@ -279,13 +269,15 @@ public class PlayerController : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         frInverseKinematic.SetOrgPos();
-        frInverseKinematic.SetIKActive(true);
+        frInverseKinematic.SetIKReloadActive(true);
         isReload = false;
     }
-
+    /// <summary>
+    /// 장전시 탄창 위치 벗어낫다가 돌아옴
+    /// </summary>
     public void DetachMagazine()
     {
-        currentGun.Magazine();
+        currentGun.Magazine(LeftHend);
     }
     public void AttachMagazine()
     {
@@ -297,7 +289,6 @@ public class PlayerController : MonoBehaviour
     /// <param name="context"></param>
     public void OnFire(bool isShoot)
     {
-      
         if (currentState != NormalState) return;
         if (isReload) return;
 
@@ -332,20 +323,30 @@ public class PlayerController : MonoBehaviour
         }
     }
     /// <summary>
-    /// 총기 변경
+    /// 총기 장착
     /// </summary>
     /// <param name="newGun"></param>
     public void EquipGun(GunBase newGun)
     {
-        if (currentGun != null)
-            currentGun.gameObject.SetActive(false);
-
         currentGun = newGun;
-        currentGun.gameObject.SetActive(true);
+        frInverseKinematic.SetIK(true);
+        animator.SetBool("IsEquipped", true);
     }
-  /// <summary>
-  /// 현재 상태 체크
-  /// </summary>
+    /// <summary>
+    /// 총기 장착해제
+    /// </summary>
+    /// <param name="newGun"></param>
+    public void UnequipGun()
+    {
+        if (currentGun == null) return;
+        currentGun.gameObject.SetActive(false);
+        currentGun = null;
+        frInverseKinematic.SetIK(false);
+        animator.SetBool("IsEquipped", false);
+    }
+    /// <summary>
+    /// 현재 상태 체크
+    /// </summary>
     public bool ChkState(IPlayerState playerState)
     {
         return currentState == playerState;

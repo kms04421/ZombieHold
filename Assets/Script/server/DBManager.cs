@@ -6,14 +6,16 @@ using System.Linq;
 public class DBManager : MonoBehaviour
 {
     public List<ItemSO> itemSOs;
-    void Start()
-    {
-        //  StartCoroutine(PostRequest());
-    }
+
     public void DBItemsRequest(System.Action<List<Item>> onCompleted)
     {
         StartCoroutine(LoadItems(onCompleted));
     }
+    /// <summary>
+    /// DB에서 아이템 정보 가져오기
+    /// </summary>
+    /// <param name="onCompleted"></param>
+    /// <returns></returns>
     IEnumerator LoadItems(System.Action<List<Item>> onCompleted)
     {
         using (UnityWebRequest request = UnityWebRequest.Get("http://localhost:3000/item"))
@@ -47,6 +49,11 @@ public class DBManager : MonoBehaviour
     {
         StartCoroutine(LoadZombie(onCompleted));
     }
+    /// <summary>
+    /// DB에서 좀비 데이터 가져오기
+    /// </summary>
+    /// <param name="onCompleted"></param>
+    /// <returns></returns>
     IEnumerator LoadZombie(System.Action<List<ZombieData>> onCompleted)
     {
         using (UnityWebRequest request = UnityWebRequest.Get("http://localhost:3000/zombie"))
@@ -67,6 +74,38 @@ public class DBManager : MonoBehaviour
                 ZombieList.Add(newZombieData);
             }
             onCompleted?.Invoke(ZombieList); //  콜백으로 리스트 전달
+        }
+    }
+    public void DBAbilityRequest(System.Action<List<AbilityDTO>> onCompleted)
+    {
+        StartCoroutine(LoadAbility(onCompleted));
+    }
+    /// <summary>
+    /// DB에서 어빌리티 정보 받아오기
+    /// </summary>
+    /// <param name="onCompleted"></param>
+    /// <returns></returns>
+    IEnumerator LoadAbility(System.Action<List<AbilityDTO>> onCompleted)
+    {
+        using (UnityWebRequest request = UnityWebRequest.Get("http://localhost:3000/ability"))
+        {
+            yield return request.SendWebRequest();
+            string json = request.downloadHandler.text;
+            Debug.Log(json);
+            AbilityListWrapper wrapper = JsonUtility.FromJson<AbilityListWrapper>(json);
+            if (wrapper == null || wrapper.ability == null)
+            {
+                Debug.LogError("파싱 실패");
+                yield break;
+            }
+            List<AbilityDTO> abilityList = new List<AbilityDTO>();
+            foreach (var dto in wrapper.ability)
+            {
+                AbilityDTO newAbilityData = new AbilityDTO(dto);
+                //여기서 db수정할데이터 추가
+                abilityList.Add( newAbilityData);
+            }
+            onCompleted?.Invoke (abilityList);
         }
     }
     IEnumerator PostRequest()

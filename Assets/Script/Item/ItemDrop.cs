@@ -50,7 +50,9 @@ public class ItemDrop : Interactable
     /// </summary>
     private void Disable()
     {
+        
         PoolManager.Instance.GetPool<ItemDrop>().ReturnToPool(this);
+        transform.SetParent(PoolManager.Instance.GetPool<ItemDrop>().transform, false);
     }
     /// <summary>
     /// 아이템이 사라지기까지 카운터 다운

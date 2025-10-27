@@ -1,24 +1,26 @@
-using System;
-using UnityEngine;
-using System.Collections;
 public class GunAR : GunBase
 {
-  
+    /// <summary>
+    /// ÃÑ±â ¹Ýµ¿ ÃÑÈçµé¸®´Â È¿°ú
+    /// </summary>
     public void StartRecoil()
     {
         if (CurrentAmmo == 0) return;
         if (recoilController != null)
         {
             recoilController.PlayRecoil();
-            playerController.ApplyRecoil(recoilController.xRecoilAmount,recoilController.yRandRecoil);
+
         }
-            
+
     }
+    /// <summary>
+    /// ÃÑ½î±â
+    /// </summary>
     public override void Shoot()
-    {     
+    {
         base.Shoot();
         StartRecoil();
     }
 
-  
+
 }

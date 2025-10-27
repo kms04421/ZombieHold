@@ -31,10 +31,17 @@ public class MonsterDrop : MonoBehaviour
         if (pool == null) return;
 
         ItemDrop itemDrop = pool.Get();
-        Vector3 spawnPos = transform.localPosition;  // 몬스터 월드 위치 기준
-        spawnPos.y += 1f;
-        itemDrop.transform.localPosition = spawnPos; // 몬스터 위치 기준
-        itemDrop.transform.localRotation = Quaternion.identity;
+        // 부모 영향 제거 (풀 오브젝트 회전/이동 방지)
+        itemDrop.transform.SetParent(null, false);
+
+        // 좀비의 현재 월드 위치를 기준으로 스폰
+        Vector3 spawnPos = transform.position;
+        spawnPos.y += 1f; // 살짝 위로 띄우기 (필요시 조정 가능)
+
+        itemDrop.transform.position = spawnPos;
+        itemDrop.transform.rotation = Quaternion.identity;
+
+        // 활성화 및 데이터 세팅
         itemDrop.gameObject.SetActive(true);
         itemDrop.SetItme(item, dropCount);
 

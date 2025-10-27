@@ -29,7 +29,7 @@ public class ItemDatabase : Singleton<ItemDatabase>
         List<Item> result = new List<Item>();
         if (allItems.Count == 0) return result;
 
-        int count = Random.Range(0, 5); // 보상 개수
+        int count = Random.Range(1, 5); // 보상 개수
         for (int i = 0; i < count; i++)
         {
             int index = Random.Range(0, allItems.Count);

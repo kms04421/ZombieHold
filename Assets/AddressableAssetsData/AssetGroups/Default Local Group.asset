@@ -18,7 +18,8 @@ MonoBehaviour:
   - m_GUID: ea18e21d9efc71443879ef23defa87eb
     m_Address: Assets/Prefab/DropBox.prefab
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Item
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f4c5b5bb968e67c40a225b99204e536b
     m_Address: Monsters/Zombie

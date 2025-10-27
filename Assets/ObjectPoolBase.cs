@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 /// <summary>
 /// 제네릭 오브젝트 풀 기본 클래스.

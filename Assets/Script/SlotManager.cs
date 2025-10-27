@@ -6,8 +6,9 @@ public class SlotManager : Singleton<SlotManager>
     [SerializeField] private GameObject slotPrefab;
     [SerializeField] private Transform slotParent;
     [SerializeField] private PlayerController playerController;
+    [SerializeField] private Transform weaponTransform;
     //인벤토리
-    [HideInInspector]public Inventory inventory;
+    [HideInInspector] public Inventory inventory;
 
     [Header("슬롯 정보 설정")]
     private int slotCount = 39;
@@ -22,7 +23,7 @@ public class SlotManager : Singleton<SlotManager>
     }
     private void Start()
     {
-    
+
         int slotid = 0;
         for (int i = 0; i < slotCount; i++)
         {
@@ -55,8 +56,40 @@ public class SlotManager : Singleton<SlotManager>
     {
         Debug.Log(uiSlots[index]);
         if (uiSlots[index] == null) return;
-        uiSlots[index].Use();
+        uiSlots[index].Use(playerController);
     }
+    /// <summary>
+    /// 무기중찾기
+    /// </summary>
+    /// <returns></returns>
+    public GunBase GetWeaponTrans(string name)
+    {
+        Transform foundChild = weaponTransform.Find(name);
+
+        if (foundChild != null)
+        {
+            Debug.Log("자식 찾음: " + foundChild.name);
+            GunBase gunBase = foundChild.GetComponent<GunBase>();
+            if (gunBase != null)
+            {
+                foundChild.gameObject.SetActive(true);
+                return gunBase;
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+        else
+        {
+            Debug.Log("자식 없음");
+            return null;
+        }
+
+
+    }
+
 
     /*    public void SwitchSlot(int index)
         {
@@ -69,9 +102,19 @@ public class SlotManager : Singleton<SlotManager>
     /// </summary>
     public void SetPlayerUI()
     {
-        int total = inventory.HasItemCount(playerController.currentGun.GetGunAmmoId());
+        if (playerController.currentGun != null)
+        {
+            //총알 관련 ui
+            int total = inventory.HasItemCount(playerController.currentGun.GetAmmoId()); // 총알이 충분한지 검사
+            PlayerUI.Instance.SetCurrentAmmo(playerController.currentGun.CurrentAmmo); // 현재 총알 ui 적용
+            PlayerUI.Instance.SetAllAmmo(total); // 남은 전체총알 ui 출력
+                                                 //총알 관련 ui
+        }
+        else
+        {
+            PlayerUI.Instance.SetCurrentAmmo(0); // 현재 총알 ui 적용
+            PlayerUI.Instance.SetAllAmmo(0); // 남은 전체총알 ui 출력
+        }
 
-        PlayerUI.Instance.SetCurrentAmmo(playerController.currentGun.CurrentAmmo);
-        PlayerUI.Instance.SetAllAmmo(total);
     }
 }
