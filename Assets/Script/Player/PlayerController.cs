@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
     private CinemachineBasicMultiChannelPerlin noiseComponent;
 
     [Header("Mouse Look")]
+    [SerializeField]private Transform CameraRoot;
     private float mouseSensitivity = 2f; // 마우스 감도
     private float xRotation = 0f;
     
@@ -40,7 +41,9 @@ public class PlayerController : MonoBehaviour
     public GunBase currentGun;
 
     [Header("Zoom Settings")]
-    public float zoomFOV = 30f;
+    [SerializeField] private CinemachineCamera normalCam;
+    [SerializeField] private CinemachineCamera zoomCam;
+    public float zoomFOV = 50f;
     private float defaultFOV;
     public float zoomSpeed = 10f;
     private bool isZooming = false;
@@ -188,8 +191,8 @@ public class PlayerController : MonoBehaviour
         // 카메라 위/아래 회전
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-        vCam.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-     
+        //vCam.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        CameraRoot.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         // 플레이어 몸체 좌/우 회전
         transform.Rotate(Vector3.up * mouseX);
     }
@@ -227,9 +230,19 @@ public class PlayerController : MonoBehaviour
     public void SetZoom(bool zoom)
     {
         isZooming = zoom;
+        if (zoom)
+        {
+            normalCam.Priority = 5;
+            zoomCam.Priority = 10; // 줌 카메라 활성화
+        }
+        else
+        {
+            normalCam.Priority = 10;
+            zoomCam.Priority = 5;  // 일반 카메라 복귀
+        }
     }
 
-    private void HandleZoom()
+    public void HandleZoom()
     {
         float targetFOV = isZooming ? zoomFOV : defaultFOV;
         vCam.Lens.FieldOfView = Mathf.Lerp(vCam.Lens.FieldOfView, targetFOV, Time.deltaTime * zoomSpeed);
@@ -273,12 +286,15 @@ public class PlayerController : MonoBehaviour
         isReload = false;
     }
     /// <summary>
-    /// 장전시 탄창 위치 벗어낫다가 돌아옴
+    /// 장전시 탄창 위치 벗어남
     /// </summary>
     public void DetachMagazine()
     {
         currentGun.Magazine(LeftHend);
     }
+    /// <summary>
+    /// 장전시 탄창 위치 원래 위치로
+    /// </summary>
     public void AttachMagazine()
     {
         currentGun.ReturnMagazine();

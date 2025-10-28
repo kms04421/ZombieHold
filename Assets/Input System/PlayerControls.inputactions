@@ -15,6 +15,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Zoom",
+                    "type": "Button",
+                    "id": "a4cf2349-215b-4552-a73a-1a0e3182db19",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Reload",
                     "type": "Button",
                     "id": "60cdceef-2b97-4e81-904c-4795db133709",
@@ -159,6 +168,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "interaction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "08158261-a0ad-48f8-9f33-403c4bb666b7",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Zoom",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

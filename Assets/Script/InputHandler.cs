@@ -67,6 +67,25 @@ public class InputHandler : MonoBehaviour
       
     }
     /// <summary>
+    /// 총기 발사 아직 반동만있음
+    /// </summary>
+    /// <param name="weaponRecoil"></param>
+    public void Zoom(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            playerController.SetZoom(true);
+            playerController.HandleZoom();
+        }
+
+        else if (context.canceled)
+        {
+            playerController.SetZoom(false);
+            playerController.HandleZoom();
+        }
+
+    }
+    /// <summary>
     /// 총기 재장전
     /// </summary>
     /// <param name="contex"></param>
