@@ -75,6 +75,7 @@ public class PlayerController : MonoBehaviour
 
         defaultFOV = vCam.Lens.FieldOfView; // Lens에서 직접 FOV
 
+        normalCam.Priority = 10;
 
         buffHandler = GetComponent<buffHandler>();
         DeadState = new DeadState(this);
