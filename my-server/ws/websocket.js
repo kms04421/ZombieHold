@@ -12,26 +12,49 @@ function initWebSocket(server) {
         ws.on('message', (msg) => {
             const data = JSON.parse(msg);
 
-            // 플레이어 이동/행동
-            if (data.type === 'playerUpdate') players[data.id] = data;
+            switch (data.type) {
+                case 'playerUpdate':
+                    players[data.id] = data;
+                    break;
 
-            // 좀비 피해 처리
-            if (data.type === 'damageZombie') {
-                const z = zombies[data.zombieId];
-                if (z) {
-                    z.hp -= data.damage;
-                    if (z.hp <= 0) delete zombies[data.zombieId];
-                }
-            }
+                case 'damageZombie':
+                    const z = zombies[data.id];
+                    if (z) {
+                        z.hp -= data.damage;
+                        const isDead = z.hp <= 0;
 
-            // 밤 시작 -> 좀비 소환 예시
-            if (data.type === 'nightStart') {
-                const zombieCount = Math.floor(Math.random() * 5) + 5;
-                const spawnMsg = JSON.stringify({ type: 'spawnZombie', count: zombieCount });
+                        const hitMsg = JSON.stringify({
+                            type: 'zombieHit',
+                            id: data.id,
+                            hp: z.hp > 0 ? z.hp : 0,
+                            dead: isDead
+                        });
 
-                wss.clients.forEach(client => {
-                    if (client.readyState === 1) client.send(spawnMsg);
-                });
+                        // 모든 클라이언트로 전송
+                        wss.clients.forEach(client => {
+                            if (client.readyState === 1) client.send(hitMsg);
+                        });
+
+                        if (isDead) delete zombies[data.id];
+                    }
+                    break;
+
+                case 'registerZombie':
+                    zombies[data.id] = {
+                        hp: data.hp,
+                        template: data.template // 나중에 템플릿/스킬 정보도 저장 가능
+                    };
+                    console.log(`Zombie registered: ID=${data.id}, HP=${data.hp}`);
+                    break;
+
+                case 'nightStart':
+                    const zombieCount = Math.floor(Math.random() * 5) + 5;
+                    const spawnMsg = JSON.stringify({ type: 'spawnZombie', count: zombieCount });
+
+                    wss.clients.forEach(client => {
+                        if (client.readyState === 1) client.send(spawnMsg);
+                    });
+                    break;
             }
         });
 

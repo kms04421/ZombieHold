@@ -54,7 +54,6 @@ public class SlotManager : Singleton<SlotManager>
         }*/
     public void UseUiSlot(int index)
     {
-        Debug.Log(uiSlots[index]);
         if (uiSlots[index] == null) return;
         uiSlots[index].Use(playerController);
     }

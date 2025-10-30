@@ -11,6 +11,7 @@ public class AttackBox : MonoBehaviour
     {
         if(other.CompareTag("Player"))
         {
+            if (Zombie.DieChk()) return;
             isInAttackRange = true;
             targetPlayer = other.gameObject;
             Zombie.ChangeState(Zombie.AttackState);
@@ -45,8 +46,8 @@ public class AttackBox : MonoBehaviour
             yield return null;
             stateInfo = Zombie.Animator.GetCurrentAnimatorStateInfo(0);
         }
-
-        Zombie.ChangeState(Zombie.ChaseState);
         waitExitCoroutine = null;
+        if (Zombie.DieChk()) yield break ;
+        Zombie.ChangeState(Zombie.ChaseState);
     }
 }

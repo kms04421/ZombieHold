@@ -60,7 +60,6 @@ public class DBManager : MonoBehaviour
         {
             yield return request.SendWebRequest();
             string json = request.downloadHandler.text;
-            Debug.Log(json);
             ZombieListWrapper wrapper = JsonUtility.FromJson<ZombieListWrapper>(json);
             if (wrapper == null || wrapper.zombie == null)
             {
@@ -69,10 +68,11 @@ public class DBManager : MonoBehaviour
             }
             List<ZombieData> ZombieList = new List<ZombieData>();
             foreach (var dto in wrapper.zombie)
-            {
+            {           
                 ZombieData newZombieData = new ZombieData(dto);
                 //여기서 db수정할데이터 추가
                 ZombieList.Add(newZombieData);
+           
             }
             onCompleted?.Invoke(ZombieList); //  콜백으로 리스트 전달
         }

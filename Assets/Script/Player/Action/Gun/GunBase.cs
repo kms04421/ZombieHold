@@ -105,7 +105,6 @@ public class GunBase : MonoBehaviour
                 hitbox.OnHit(gunData.damage);
             if (hitEffectPrefab != null)
             {
-                Debug.Log(hit.transform.tag);
                 if(hit.transform.tag =="enemy")
                 {
                     hitEffectPrefab.transform.position = hit.point;

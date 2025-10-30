@@ -6,11 +6,12 @@ namespace YourGame.AI
     {
         public void Enter(Zombie z)
         {
+            Debug.Log("¡¯¿‘");
             z.Animator.SetTrigger("Die");
             z.Die();        
         }
         public void Execute(Zombie z) { }
         public void Exit(Zombie z) { }
-        public void OnHit(Zombie z, float damage, Zombie.HitType hitType) { }
+      
     }
 }

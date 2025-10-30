@@ -105,7 +105,6 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
                 break;
             case ItemType.Weapon:
                 GunBase gunBase = SlotManager.Instance.GetWeaponTrans(item.template.name);
-                Debug.Log(item.template.name);
                 if (gunBase != null)
                 {                 
                     player.EquipGun(gunBase);

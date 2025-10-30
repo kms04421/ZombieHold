@@ -8,6 +8,7 @@ public class MonsterPool : ObjectPoolBase<Zombie>
 {
     private List<ZombieData> zombieDatas;
     [SerializeField] private DBManager DBManager;
+    private int zombie_id = 0;
     private void Awake()
     {
         zombieDatas = new List<ZombieData>();
@@ -65,9 +66,11 @@ public class MonsterPool : ObjectPoolBase<Zombie>
         for (int i = 0; i < PoolSize; i++)
         {
             Zombie zombie = Instantiate(loadedPrefab, transform).GetComponent<Zombie>();
-            zombie.data = zombieDatas[0];
+            zombie.data =new ZombieData(zombieDatas[0]);
+            zombie.data.id = zombie_id;
             zombie.gameObject.SetActive(false);
             pool.Enqueue(zombie);
+            zombie_id++;
         }
     }
     /// <summary>
