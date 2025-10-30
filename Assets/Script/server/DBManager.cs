@@ -60,6 +60,7 @@ public class DBManager : MonoBehaviour
         {
             yield return request.SendWebRequest();
             string json = request.downloadHandler.text;
+            Debug.Log(json);
             ZombieListWrapper wrapper = JsonUtility.FromJson<ZombieListWrapper>(json);
             if (wrapper == null || wrapper.zombie == null)
             {

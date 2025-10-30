@@ -12,8 +12,8 @@ public class GunBase : MonoBehaviour
     [Header("총 데이터")]
     public GunData gunData;
     [Header("총구 위치")]
-    [SerializeField] private Transform muzzPos; 
-
+    [SerializeField] private Transform muzzPos;
+    [SerializeField] private ParticleSystem hitEffectPrefab;
     private int _currentAmmo; //현재총알 
     public int CurrentAmmo // 현재 총알
     {
@@ -26,7 +26,7 @@ public class GunBase : MonoBehaviour
 
     //총기반동 스크립트
     public RecoilController recoilController;
- 
+
     protected bool isFiring = false; // 연발용
     private float nextFireTime = 0f; // 연발 단발용
 
@@ -64,7 +64,7 @@ public class GunBase : MonoBehaviour
         }
     }
 
-    protected virtual GunBase Get() 
+    protected virtual GunBase Get()
     {
         return this;
     }
@@ -92,9 +92,7 @@ public class GunBase : MonoBehaviour
     /// </summary>
     public virtual void Shoot()
     {
-        Debug.Log("슛");
         if (CurrentAmmo == 0) return;
-        Debug.Log("슛0   ");
         // Ray 생성
         Ray ray = new Ray(muzzPos.position, -muzzPos.right);
 
@@ -105,6 +103,20 @@ public class GunBase : MonoBehaviour
             var hitbox = hit.collider.GetComponent<HitBox>();
             if (hitbox != null)
                 hitbox.OnHit(gunData.damage);
+            if (hitEffectPrefab != null)
+            {
+                Debug.Log(hit.transform.tag);
+                if(hit.transform.tag =="enemy")
+                {
+                    hitEffectPrefab.transform.position = hit.point;
+                    hitEffectPrefab.transform.rotation = Quaternion.LookRotation(hit.normal);
+                    hitEffectPrefab.Play();
+
+                }
+
+
+
+            }
         }
 
         // muzzleFlash
@@ -144,12 +156,12 @@ public class GunBase : MonoBehaviour
     public bool Reload()
     {
         string ammoID = GetAmmoId();
-        if(inventory == null)
+        if (inventory == null)
         {
             inventory = SlotManager.Instance.inventory;
         }
         int total = inventory.HasItemCount(ammoID);   // 인벤토리에 있는 총알 수
-        if(total == 0 || CurrentAmmo == gunData.maxAmmo) return false;
+        if (total == 0 || CurrentAmmo == gunData.maxAmmo) return false;
         int needed = gunData.maxAmmo - CurrentAmmo;   // 탄창을 채우기 위해 필요한 총알 수
 
         if (total < needed)
@@ -187,14 +199,14 @@ public class GunBase : MonoBehaviour
 
             case GunType.AR:
                 return "2_1";
-                
+
             case GunType.SMG:
                 break;
         }
         return "";
     }
-  
- 
+
+
     /// <summary>
     /// 장전 탄창 손으로 부모 변경
     /// </summary>
