@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: 52f525b79cfb7af4792a48e289fc7e4e
   m_SerializeEntries:
+  - m_GUID: af30e5594e6f43a4b95f06874c4b1119
+    m_Address: Player/Player
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Player
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ea18e21d9efc71443879ef23defa87eb
     m_Address: Assets/Prefab/DropBox.prefab
     m_ReadOnly: 0

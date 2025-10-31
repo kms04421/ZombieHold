@@ -15,6 +15,7 @@ public class MultiClient : Singleton<MultiClient>
 {
     private WebSocket ws;
     public Dictionary<int, Zombie> zombies;
+    public string myPlayerID;
     // 예시: 간단한 메인 스레드 큐
     private Queue<Action> mainThreadActions = new Queue<Action>();
     void Start()
@@ -44,12 +45,46 @@ public class MultiClient : Singleton<MultiClient>
         ws.Connect();
     }
     /// <summary>
+    /// 플레이어 정보 서버에 등록
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="hp"></param>
+    /// <param name="MaxHP"></param>
+    public void SendPlayerRegisterToServer(string id, float MaxHP)
+    {
+        RegisterPlayerMessage msg = new RegisterPlayerMessage
+        {
+            type = "registerPlayer",
+            id = id,
+            currentHP = MaxHP,
+            maxHP = MaxHP
+        };
+        string json = JsonUtility.ToJson(msg);
+        ws.Send(json);
+    }
+
+    /// <summary>
+    /// Player피격시 정보 서버에 보냄
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="damage"></param>
+    public void SendHitPlayerToServer(string id, float damage)
+    {
+        PlayerHitMessage msg = new PlayerHitMessage
+        {
+            type = "damagePlayer",
+            id = id,
+            damage = damage
+        };
+    }
+
+    /// <summary>
     /// 서버에 좀비 정보 보내기
     /// </summary>
     /// <param name="zombieId"></param>
     /// <param name="hp"></param>
     /// <param name="templateName"></param>
-    public void SendZombieToServer(int id, float hp)
+    public void SendZombieRegisterToServer(int id, float hp)
     {
         RegisterZombieMessage msg = new RegisterZombieMessage
         {
@@ -61,7 +96,7 @@ public class MultiClient : Singleton<MultiClient>
         string json = JsonUtility.ToJson(msg);
         ws.Send(json);
 
-      //  Debug.Log($"서버에 좀비 등록: ID={id}, HP={hp}");
+        //  Debug.Log($"서버에 좀비 등록: ID={id}, HP={hp}");
     }
     /// <summary>
     /// 좀비 피격시
@@ -96,14 +131,14 @@ public class MultiClient : Singleton<MultiClient>
         switch (msg.type)
         {
             case "zombieHit":
-               // Debug.Log(json);
+                // Debug.Log(json);
                 var multiHit = JsonUtility.FromJson<ZombieHitMessageFromServer>(json);
                 if (multiHit.hits != null && multiHit.hits.Length > 0)
                 {
                     foreach (var h in multiHit.hits)
                     {
                         if (zombies.TryGetValue(h.id, out var zombie))
-                        {                     
+                        {
                             zombie.OnHit(h.hp, h.dead);
                         }
                     }
@@ -118,6 +153,22 @@ public class MultiClient : Singleton<MultiClient>
                             zombie.OnHit(singleHit.hp, singleHit.dead);
                     });
                 }
+                break;
+            case "NewPlayer":
+                var packet = JsonUtility.FromJson<ServerPacket>(json);
+                var data = packet.data;
+                mainThreadActions.Enqueue(() =>
+                {
+                    GameManager.Instance.AddMultiPlayer(data);
+                
+                });
+
+                break;
+
+            case "AssingID":
+                myPlayerID = msg.id; // 내 로컬 플레이어 ID
+               
+        
                 break;
             case "playerUpdate":
                 //  var player = JsonUtility.FromJson<PlayerMessage>(msg.data);

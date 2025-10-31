@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 52f525b79cfb7af4792a48e289fc7e4e
   m_currentHash:
     serializedVersion: 2
-    Hash: 00000000000000000000000000000000
+    Hash: ac729a762849c28d5452a7039584b814
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_CatalogRequestsTimeout: 0
@@ -101,6 +101,7 @@ MonoBehaviour:
     - default
     - Monster
     - Item
+    - Player
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 1c2fbbd2478cf304bb21627a866576c8, type: 2}

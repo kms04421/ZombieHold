@@ -49,7 +49,7 @@ public class ZombieSpawner : MonoBehaviour
             zombie.transform.localPosition = transform.localPosition;
             zombie.transform.localRotation = Quaternion.identity;
             zombie.gameObject.SetActive(true);
-            MultiClient.Instance.SendZombieToServer(zombie.data.id, zombie.data.maxHp);
+            MultiClient.Instance.SendZombieRegisterToServer(zombie.data.id, zombie.data.maxHp);
             yield return delay;
         }
         coroutine = null;

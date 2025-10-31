@@ -6,6 +6,19 @@ public class InputHandler : MonoBehaviour
 {
     public Interactable interactable;
     [SerializeField]private PlayerController playerController;
+ 
+
+    private void Start()
+    {
+        GameManager.Instance.OnPlayerIDAssigned += SetPlayerController;
+    }
+    private void SetPlayerController()
+    {
+        if (playerController == null)
+        {
+            playerController = GameManager.Instance.GetPlayerID;
+        }
+    }
     /// <summary>
     /// 슬롯 사용 (1~6)까지
     /// </summary>

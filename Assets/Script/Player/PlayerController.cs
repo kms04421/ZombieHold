@@ -1,7 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using Unity.Cinemachine;
-using Unity.Mathematics;
 using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
@@ -11,7 +9,7 @@ public class PlayerController : MonoBehaviour
     [Header("PlayerHand")]
     [SerializeField] private Transform LeftHend;
     [SerializeField] private Transform RightHend;
-   
+
     [Header("GunData")]
     public GameObject weapon;
 
@@ -24,10 +22,10 @@ public class PlayerController : MonoBehaviour
     private CinemachineBasicMultiChannelPerlin noiseComponent;
 
     [Header("Mouse Look")]
-    [SerializeField]private Transform CameraRoot;
+    [SerializeField] private Transform CameraRoot;
     private float mouseSensitivity = 2f; // 마우스 감도
     private float xRotation = 0f;
-    
+
     //컴퍼넌트용
     [HideInInspector] public Animator animator;
     private FrInverseKinematic frInverseKinematic;
@@ -35,10 +33,11 @@ public class PlayerController : MonoBehaviour
     private buffHandler buffHandler;
     private Vector3 velocity;
 
-    [HideInInspector]public bool isGrounded;
+    [HideInInspector] public bool isGrounded;
 
     [Header("무기 슬롯")]
     public GunBase currentGun;
+    public Transform weaponTransform;
 
     [Header("Zoom Settings")]
     [SerializeField] private CinemachineCamera normalCam;
@@ -49,6 +48,8 @@ public class PlayerController : MonoBehaviour
     private bool isZooming = false;
 
     public Vector3 jumpPos; // 점프시 임시 저장위치 좀비추격에 필요
+
+    public bool isLocalPlayer = false; //내가 이캐릭터의 로컬 플레이어인지 구분용
 
     private IPlayerState currentState;
 
@@ -69,6 +70,8 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        if (MultiClient.Instance.myPlayerID == playerData.id) isLocalPlayer = true;
+
         noiseComponent = vCam.GetComponentInChildren<CinemachineBasicMultiChannelPerlin>();
         if (noiseComponent == null)
             Debug.LogWarning("Noise component not found!");
@@ -87,8 +90,13 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        currentState.HandleInput();
-        currentState.UpdateState();
+        if (isLocalPlayer)
+        {
+            currentState.HandleInput();
+            currentState.UpdateState();
+        }
+
+
     }
     /// <summary>
     /// 상태 변경
@@ -96,6 +104,7 @@ public class PlayerController : MonoBehaviour
     /// <param name="newState"></param>
     public void ChangeState(IPlayerState newState)
     {
+        if (!isLocalPlayer) return;
         currentState?.Exit();
         currentState = newState;
         currentState.Enter();
@@ -175,6 +184,7 @@ public class PlayerController : MonoBehaviour
     }
     private Vector3 GetGroundPoint()
     {
+      
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 10f))
         {
             return hit.point; // 레이가 땅에 닿은 위치 반환
@@ -199,20 +209,20 @@ public class PlayerController : MonoBehaviour
     }
     //추가 start
 
-   /// <summary>
-   /// 화면 흔들림 
-   /// </summary>
-   /// <param name="amplitude"></param>
-   /// <param name="frequency"></param>
-   /// <param name="duration"></param>
+    /// <summary>
+    /// 화면 흔들림 
+    /// </summary>
+    /// <param name="amplitude"></param>
+    /// <param name="frequency"></param>
+    /// <param name="duration"></param>
     public void ShakeCamera(float amplitude, float frequency, float duration)
     {
+        if (!isLocalPlayer) return;
         StartCoroutine(DoShake(amplitude, frequency, duration));
     }
 
     private IEnumerator DoShake(float amplitude, float frequency, float duration)
     {
-
         // 최신 버전에서는 m_AmplitudeGain 대신 AmplitudeGain 사용
         noiseComponent.AmplitudeGain = amplitude;
         noiseComponent.FrequencyGain = frequency;
@@ -230,6 +240,7 @@ public class PlayerController : MonoBehaviour
     #region Zoom
     public void SetZoom(bool zoom)
     {
+        if (!isLocalPlayer) return;
         isZooming = zoom;
         if (zoom)
         {
@@ -245,6 +256,7 @@ public class PlayerController : MonoBehaviour
 
     public void HandleZoom()
     {
+        if (!isLocalPlayer) return;
         float targetFOV = isZooming ? zoomFOV : defaultFOV;
         vCam.Lens.FieldOfView = Mathf.Lerp(vCam.Lens.FieldOfView, targetFOV, Time.deltaTime * zoomSpeed);
     }
@@ -257,6 +269,7 @@ public class PlayerController : MonoBehaviour
     /// <param name="enable"></param>
     public void EnableMovement(bool enable)
     {
+        if (!isLocalPlayer) return;
         controller.enabled = enable;
     }
     #endregion
@@ -266,11 +279,12 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public void ReloadAnimaion()
     {
+        if (!isLocalPlayer) return;
         // IK 끄기
         frInverseKinematic.SetIKReloadActive(false);
         // 리로드 애니메이션 실행
         animator.SetTrigger("Reload");
-  
+
         // 코루틴으로 일정 시간 후 다시 IK 켜기 (애니메이션 길이에 맞춰 조절)
         StartCoroutine(RestoreIKAfterDelay(3.1f));
     }
@@ -291,6 +305,7 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public void DetachMagazine()
     {
+        if (!isLocalPlayer) return;
         currentGun.Magazine(LeftHend);
     }
     /// <summary>
@@ -298,6 +313,7 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public void AttachMagazine()
     {
+        if (!isLocalPlayer) return;
         currentGun.ReturnMagazine();
     }
     /// <summary>
@@ -306,6 +322,7 @@ public class PlayerController : MonoBehaviour
     /// <param name="context"></param>
     public void OnFire(bool isShoot)
     {
+        if (!isLocalPlayer) return;
         if (currentState != NormalState) return;
         if (isReload) return;
 
@@ -313,7 +330,7 @@ public class PlayerController : MonoBehaviour
         {
             ShakeCamera(0.7f, 0.7f, 0.1f);
             currentGun?.StartFiring();
-        }    
+        }
         else
             currentGun?.StopFiring();
 
@@ -325,6 +342,7 @@ public class PlayerController : MonoBehaviour
     /// <param name="context"></param>
     public void OnReload()
     {
+        if (!isLocalPlayer) return;
         if (currentState != NormalState) return;
         if (currentGun == null) return;
         if (!isReload)
@@ -345,6 +363,7 @@ public class PlayerController : MonoBehaviour
     /// <param name="newGun"></param>
     public void EquipGun(GunBase newGun)
     {
+        if (!isLocalPlayer) return;
         currentGun = newGun;
         frInverseKinematic.SetIK(true);
         animator.SetBool("IsEquipped", true);
@@ -355,6 +374,7 @@ public class PlayerController : MonoBehaviour
     /// <param name="newGun"></param>
     public void UnequipGun()
     {
+        if (!isLocalPlayer) return;
         if (currentGun == null) return;
         currentGun.gameObject.SetActive(false);
         currentGun = null;
@@ -374,7 +394,8 @@ public class PlayerController : MonoBehaviour
     /// <param name="_playerData"></param>
     public void SetStats(PlayerData _playerData)
     {
+        if (!isLocalPlayer) return;
         playerData.AddPlayData(_playerData);
     }
-    
+
 }

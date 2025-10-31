@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Collections;
 
 public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler,IEventSystemHandler, IEndDragHandler
 {
@@ -25,14 +26,18 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
 
     private Transform orgTransform;
 
-    private void Awake()
+    private IEnumerator Start()
     {
+        // PlayerList가 null이 아니고, 최소 1명 있을 때까지 대기
+        yield return new WaitUntil(() => GameManager.Instance.PlayerList != null
+                                      && GameManager.Instance.PlayerList.Count > 0);
+
         if (test != null)
         {
             SetSlot(new Item(test, 20));
-
         }
     }
+
     /// <summary>
     /// 아이템 정보 슬롯에 Setting
     /// </summary>

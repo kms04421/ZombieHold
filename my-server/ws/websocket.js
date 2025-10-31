@@ -6,15 +6,42 @@ function initWebSocket(server) {
     const zombies = {};
     const players = {};
 
+    const { v4: uuidv4 } = require('uuid');
+
     wss.on('connection', (ws) => {
-        console.log('클라이언트 연결됨');
+        const playerId = uuidv4();
+    
+
+        console.log(`플레이어 접속: ${playerId}`);
+        const newPlayer = {
+            id: playerId,
+            position: { x: 0, y: 0, z: 0 },
+        }
+        const spawnMsg = JSON.stringify({
+            type: "NewPlayer",
+            data: newPlayer
+        });
+
+        wss.clients.forEach(client => {
+            if (client.readyState === 1) {
+                client.send(spawnMsg);
+            }
+        });
+   
+        ws.send(JSON.stringify({ type: "AssingID", id: playerId })); //본인 id전송
 
         ws.on('message', (msg) => {
             const data = JSON.parse(msg);
 
             switch (data.type) {
-                case 'playerUpdate':
-                    players[data.id] = data;
+            
+                    //여기서부터 좀비
+                case 'registerZombie':
+                    zombies[data.id] = {
+                        hp: data.hp,
+                        template: data.template // 나중에 템플릿/스킬 정보도 저장 가능
+                    };
+                    console.log(`Zombie registered: ID=${data.id}, HP=${data.hp}`);
                     break;
 
                 case 'damageZombie':
@@ -39,12 +66,36 @@ function initWebSocket(server) {
                     }
                     break;
 
-                case 'registerZombie':
-                    zombies[data.id] = {
-                        hp: data.hp,
-                        template: data.template // 나중에 템플릿/스킬 정보도 저장 가능
+                    // 여기서 부터 플레이어
+                case 'registerPlayer':
+                    players[data.id] = {
+                        currentHP: data.currentHP,
+                        maxHP: data.maxHP,
+
                     };
-                    console.log(`Zombie registered: ID=${data.id}, HP=${data.hp}`);
+                    console.log(`Player registered: ID=${data.id}, MaxHP=${data.MaxHP}`);
+                    break;
+
+                case 'damagePlayer':
+                    const p = players[data.id];
+                    if (p) {
+                        p.currentHP -= data.damage;
+                        const isDead = p.currentHP <= 0;
+
+                        const hitMsg = JSON.stringify({
+                            type: 'playerHit',
+                            id: data.id,
+                            currentHP: p.currentHP > 0 ? p.currentHP : 0
+                        });
+
+                        wss.client.forEach(client => {
+                            if (client.readyState === 1) client.send(hitMsg);
+                        });                    
+                    }
+                    break;
+
+                case 'playerUpdate':
+                    players[data.id] = data;
                     break;
 
                 case 'nightStart':

@@ -6,7 +6,7 @@ public class SlotManager : Singleton<SlotManager>
     [SerializeField] private GameObject slotPrefab;
     [SerializeField] private Transform slotParent;
     [SerializeField] private PlayerController playerController;
-    [SerializeField] private Transform weaponTransform;
+
     //인벤토리
     [HideInInspector] public Inventory inventory;
 
@@ -23,6 +23,7 @@ public class SlotManager : Singleton<SlotManager>
     }
     private void Start()
     {
+        GameManager.Instance.OnPlayerIDAssigned += SetPlayerController;
 
         int slotid = 0;
         for (int i = 0; i < slotCount; i++)
@@ -38,7 +39,7 @@ public class SlotManager : Singleton<SlotManager>
             slotid = slotid + 1;
             inventory.slots.Add(slotid.ToString(), uiSlots[i]);
         }
-        SetPlayerUI();
+     
     }
     /*    public void AssignItem(int index, Slot item)
         {
@@ -52,6 +53,11 @@ public class SlotManager : Singleton<SlotManager>
             if (slots[index] != null) return;
                 slots[index].Use();
         }*/
+    private void SetPlayerController()
+    {
+        playerController = GameManager.Instance.GetPlayerID;
+        SetPlayerUI();
+    }
     public void UseUiSlot(int index)
     {
         if (uiSlots[index] == null) return;
@@ -63,7 +69,7 @@ public class SlotManager : Singleton<SlotManager>
     /// <returns></returns>
     public GunBase GetWeaponTrans(string name)
     {
-        Transform foundChild = weaponTransform.Find(name);
+        Transform foundChild = playerController.weaponTransform.Find(name);
 
         if (foundChild != null)
         {

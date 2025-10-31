@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using YourGame.AI;
 public class GameManager : Singleton<GameManager>
 {
     [Header("플레이어저장용")]
@@ -12,33 +14,45 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private GameObject box;
     //좀비 스포너 구독용
     public static event Action<int> OnSpawnZombie;
-
+    // ID 세팅 완료 이벤트
+    public event Action OnPlayerIDAssigned;
     //날짜용
     public int dayCount = 1;
-
-    protected override void Awake()
-    {
-        SetPlayerList();
-
-    }
     private void Start()
     {
         StartCoroutine(WaveStart());
         OnSpawnZombie?.Invoke(1);
         Invoke("OnBox", 2);
     }
-    /// <summary>
-    /// 플레이어 PlayerList에 세팅
-    /// </summary>
-    private void SetPlayerList()
+ 
+    public void AddMultiPlayer(PlayerSpawnData data)
     {
-        PlayerController[] playerObjects = GameObject
-            .FindGameObjectsWithTag("Player")
-            .Select(go => go.GetComponent<PlayerController>())
-            .Where(pc => pc != null)
-            .ToArray();
+        Debug.Log("playerSp");
+        string Key = "Player/Player";
 
-        PlayerList.AddRange(playerObjects);
+        Addressables.LoadAssetAsync<GameObject>(Key).Completed += (handle) =>
+        {
+            GameObject prefab = handle.Result;
+            if (prefab != null)
+            {
+                PlayerController player = Instantiate(prefab).GetComponent<PlayerController>();
+                player.playerData.id = data.id;
+                MultiClient.Instance.SendPlayerRegisterToServer(player.playerData.id, player.playerData.MaxHp);            
+                PlayerList.Add(player);
+                if (player.playerData.id == MultiClient.Instance.myPlayerID)
+                {
+                    TriggerPlayerIDAssigned();
+                }
+            }
+            else
+                Debug.Log("Player 프리팹 없습니다");
+
+        };
+      
+    }
+    public void TriggerPlayerIDAssigned()
+    {
+        OnPlayerIDAssigned?.Invoke();
     }
     /// <summary>
     /// PlayerList에서 player정보 get
@@ -50,6 +64,21 @@ public class GameManager : Singleton<GameManager>
         {
             int randomIndex = UnityEngine.Random.Range(0, PlayerList.Count);
             return PlayerList[randomIndex];
+        }
+    }
+    public PlayerController GetPlayerID
+    {
+        get
+        {
+            for (int i = 0; i < PlayerList.Count; i++)
+            {
+                if (PlayerList[i].playerData.id == MultiClient.Instance.myPlayerID)
+                {
+                    return PlayerList[i];
+                }
+            }
+            Debug.Log("일치하는 id없음" + MultiClient.Instance.myPlayerID);
+            return null;
         }
     }
     /// <summary>
