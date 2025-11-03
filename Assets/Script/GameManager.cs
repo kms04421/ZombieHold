@@ -4,11 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using YourGame.AI;
 public class GameManager : Singleton<GameManager>
 {
     [Header("플레이어저장용")]
-    public List<PlayerController> PlayerList;
+    public Dictionary<string, PlayerController> PlayerDic;
 
     [Header("보급상자")]
     [SerializeField] private GameObject box;
@@ -18,67 +17,88 @@ public class GameManager : Singleton<GameManager>
     public event Action OnPlayerIDAssigned;
     //날짜용
     public int dayCount = 1;
+    protected override void Awake()
+    {
+        base.Awake();
+        PlayerDic = new Dictionary<string, PlayerController>();
+    }
     private void Start()
     {
         StartCoroutine(WaveStart());
         OnSpawnZombie?.Invoke(1);
         Invoke("OnBox", 2);
     }
- 
-    public void AddMultiPlayer(PlayerSpawnData data)
+
+    public void AddMultiPlayer(ActorData data)
     {
-        Debug.Log("playerSp");
+    
         string Key = "Player/Player";
 
         Addressables.LoadAssetAsync<GameObject>(Key).Completed += (handle) =>
         {
+            Debug.Log("AddMultiPlayer" + MultiClient.Instance.myPlayerID);
             GameObject prefab = handle.Result;
             if (prefab != null)
             {
-                PlayerController player = Instantiate(prefab).GetComponent<PlayerController>();
-                player.playerData.id = data.id;
-                MultiClient.Instance.SendPlayerRegisterToServer(player.playerData.id, player.playerData.MaxHp);            
-                PlayerList.Add(player);
-                if (player.playerData.id == MultiClient.Instance.myPlayerID)
+                // 기존 반복문 제거
+                if (!PlayerDic.ContainsKey(data.id))
                 {
-                    TriggerPlayerIDAssigned();
+                    Debug.Log("Dic없음");
+                    PlayerController player = Instantiate(prefab).GetComponent<PlayerController>();
+                    player.playerData.id = data.id;
+                    PlayerDic.Add(data.id, player);
+                    //클라이언트 작동시
+                    if (player.playerData.id == MultiClient.Instance.myPlayerID)
+                    {
+                        
+                        TriggerPlayerIDAssigned(); // 자신의 플레이어컨트로러 저장
+                    }
+
+                
+
+                    // 서버등록시
+                    if (player.playerData.id == MultiClient.Instance.myPlayerID)
+                    {
+                        MultiClient.Instance.SendPlayerRegisterToServer(player.playerData.id, player.playerData.MaxHp);
+                    }
                 }
             }
             else
                 Debug.Log("Player 프리팹 없습니다");
 
         };
-      
+
+
     }
     public void TriggerPlayerIDAssigned()
     {
         OnPlayerIDAssigned?.Invoke();
     }
     /// <summary>
-    /// PlayerList에서 player정보 get
+    /// PlayerDic에서 Random player정보 get
     /// </summary>
     /// <returns></returns>
     public PlayerController GetPlayer
     {
         get
         {
-            int randomIndex = UnityEngine.Random.Range(0, PlayerList.Count);
-            return PlayerList[randomIndex];
+            int randomIndex = UnityEngine.Random.Range(0, PlayerDic.Count);
+            return PlayerDic.Values.ElementAt(randomIndex);
         }
     }
     public PlayerController GetPlayerID
     {
         get
         {
-            for (int i = 0; i < PlayerList.Count; i++)
+            // 기존 반복문 제거
+            if (PlayerDic.ContainsKey(MultiClient.Instance.myPlayerID))
             {
-                if (PlayerList[i].playerData.id == MultiClient.Instance.myPlayerID)
-                {
-                    return PlayerList[i];
-                }
+                return PlayerDic[MultiClient.Instance.myPlayerID];
             }
-            Debug.Log("일치하는 id없음" + MultiClient.Instance.myPlayerID);
-            return null;
+            else
+            {
+                return null;
+            }
         }
     }
     /// <summary>

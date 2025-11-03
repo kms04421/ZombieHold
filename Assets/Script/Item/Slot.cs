@@ -29,8 +29,8 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
     private IEnumerator Start()
     {
         // PlayerList가 null이 아니고, 최소 1명 있을 때까지 대기
-        yield return new WaitUntil(() => GameManager.Instance.PlayerList != null
-                                      && GameManager.Instance.PlayerList.Count > 0);
+        yield return new WaitUntil(() => GameManager.Instance.PlayerDic != null
+                                      && GameManager.Instance.PlayerDic.Count > 0);
 
         if (test != null)
         {

@@ -5,6 +5,7 @@ public class PlayerController : MonoBehaviour
 {
     [Header("PlayeData")]
     public PlayerData playerData;
+    public Health Health;
 
     [Header("PlayerHand")]
     [SerializeField] private Transform LeftHend;
@@ -70,9 +71,18 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        if (MultiClient.Instance.myPlayerID == playerData.id) isLocalPlayer = true;
+        if (MultiClient.Instance.myPlayerID == playerData.id)
+        {
+            isLocalPlayer = true;
+       
+        }
+        else
+        {
+            zoomCam.gameObject.SetActive(false);
+            normalCam.gameObject.SetActive(false);
+        }
 
-        noiseComponent = vCam.GetComponentInChildren<CinemachineBasicMultiChannelPerlin>();
+            noiseComponent = vCam.GetComponentInChildren<CinemachineBasicMultiChannelPerlin>();
         if (noiseComponent == null)
             Debug.LogWarning("Noise component not found!");
 

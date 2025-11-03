@@ -5,7 +5,7 @@ public class AttackBox : MonoBehaviour
 {
     public Zombie Zombie;
     public bool isInAttackRange = false;
-    public GameObject targetPlayer;
+    public PlayerController player;
     private Coroutine waitExitCoroutine;
     private void OnTriggerEnter(Collider other)
     {
@@ -13,7 +13,7 @@ public class AttackBox : MonoBehaviour
         {
             if (Zombie.DieChk()) return;
             isInAttackRange = true;
-            targetPlayer = other.gameObject;
+            player = other.GetComponent<PlayerController>();
             Zombie.ChangeState(Zombie.AttackState);
          
         }
@@ -24,7 +24,7 @@ public class AttackBox : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             isInAttackRange = false;
-            targetPlayer = null;
+            player = null;
             Zombie.Animator.SetBool("Attack", false);
             if (waitExitCoroutine != null)
                 StopCoroutine(waitExitCoroutine); // 중복 방지
@@ -47,7 +47,6 @@ public class AttackBox : MonoBehaviour
             stateInfo = Zombie.Animator.GetCurrentAnimatorStateInfo(0);
         }
         waitExitCoroutine = null;
-        if (Zombie.DieChk()) yield break ;
         Zombie.ChangeState(Zombie.ChaseState);
     }
 }

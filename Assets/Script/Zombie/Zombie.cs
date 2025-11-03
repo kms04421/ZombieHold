@@ -1,9 +1,6 @@
 using System.Collections;
-using Unity.VisualScripting;
-using UnityEditor.EditorTools;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UIElements;
 namespace YourGame.AI
 {
     [RequireComponent(typeof(NavMeshAgent))]
@@ -61,7 +58,7 @@ namespace YourGame.AI
         }
         private void OnEnable()
         {
-            if (GameManager.Instance.PlayerList.Count > 0)
+            if (GameManager.Instance.PlayerDic.Count > 0)
             {
                 chaseTarget = GameManager.Instance.GetPlayer;
                 ChangeState(ChaseState);
@@ -86,7 +83,7 @@ namespace YourGame.AI
         /// <returns></returns>
         private IEnumerator WaitForPlayers()
         {
-            yield return new WaitUntil(() => GameManager.Instance.PlayerList.Count > 0);
+            yield return new WaitUntil(() => GameManager.Instance.PlayerDic.Count > 0);
             chaseTarget = GameManager.Instance.GetPlayer;
             ChangeState(ChaseState);
         }
@@ -162,10 +159,11 @@ namespace YourGame.AI
         /// </summary>
         public void TryHit()
         {
-            if (attackBox.isInAttackRange && attackBox.targetPlayer != null)
+            if (attackBox.isInAttackRange && attackBox.player != null)
             {
                 // 데미지 처리
-                attackBox.targetPlayer.GetComponent<Health>()?.TakeDamage(data.attackDamage);
+                attackBox.player.Health?.TakeDamage(data.attackDamage);
+                MultiClient.Instance.SendHitPlayerToServer(attackBox.player.playerData.id, data.attackDamage);
             }
         }
         /// <summary>

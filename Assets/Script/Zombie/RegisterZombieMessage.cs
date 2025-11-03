@@ -1,70 +1,54 @@
 using System;
-using UnityEngine.UIElements;
+using UnityEngine;
+
+[System.Serializable]
+public struct PlayerMessage
+{
+    public string type; // 메시지 타입 ("existingPlayers", "NewPlayer" 등)
+    public ActorData[] data; // 플레이어 정보 배열
+}
+
+// 제네릭 메시지 구조
+[Serializable]
+public class NetworkMessage
+{
+    public string type;     // "NewPlayer", "ExistingPlayers", "ActorUpdate", "ActorHit"
+    public ActorData data;
+}
 
 [Serializable]
-public struct RegisterZombieMessage 
+public struct ActorData
 {
-    public string type;
-    public int id;
+    public string id;
     public float hp;
-}
-[Serializable]
-public struct ZombieHitMessage
-{
-    public string type;
-    public int id;
+    public float maxHP; // 플레이어만 필요
     public float damage;
+    public PositionData position;
 }
 [Serializable]
-public struct ZombieHitMessageFromServer
+public class ActorListMessage
 {
-    public SingleZombieHit[] hits;
-}
-[Serializable]
-public class SingleZombieHit
-{
-    public int id;
-    public float hp;
-    public bool dead;
-}
-[Serializable]
-public class ServerMessage
-{
-    public string type;
-    public string id;
-    public string data; // 나중에 JSON 문자열로 담아서 타입별로 다시 파싱
-}
-[Serializable]
-public struct RegisterPlayerMessage 
-{
-    public string type;
-    public string id;
-    public float currentHP;
-    public float maxHP;
-}
-[Serializable]
-public struct PlayerHitMessage
-{
-    public string type;
-    public string id;
-    public float damage;
+    public string type;     // "ExistingPlayers" 등
+    public ActorData[] data;
 }
 [System.Serializable]
-public class ServerPacket
-{
-    public string type; // 패킷 타입 (예: SPAWN_PLAYER, PLAYER_HIT 등)
-    public PlayerSpawnData data; // data는 또 다른 클래스(혹은 string)
-}
-[System.Serializable]
-public class PlayerSpawnData
-{
-    public string id;
-    public Position position;
-}
-[System.Serializable]
-public class Position
+public struct PositionData
 {
     public float x;
     public float y;
     public float z;
+
+    public Vector3 ToVector3() => new Vector3(x, y, z);
+}
+[Serializable]
+public struct ZombieHitMessageFromServer
+{
+    public ZombieDataMesage[] hits;
+}
+[Serializable]
+public struct ZombieDataMesage
+{
+    public string id;
+    public float hp;
+    public bool dead;
 }

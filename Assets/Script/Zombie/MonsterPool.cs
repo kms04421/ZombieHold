@@ -67,7 +67,7 @@ public class MonsterPool : ObjectPoolBase<Zombie>
         {
             Zombie zombie = Instantiate(loadedPrefab, transform).GetComponent<Zombie>();
             zombie.data =new ZombieData(zombieDatas[0]);
-            zombie.data.id = zombie_id;
+            zombie.data.id = zombie_id.ToString();
             zombie.gameObject.SetActive(false);
             pool.Enqueue(zombie);
             zombie_id++;

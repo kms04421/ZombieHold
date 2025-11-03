@@ -10,36 +10,38 @@ function initWebSocket(server) {
 
     wss.on('connection', (ws) => {
         const playerId = uuidv4();
-    
 
-        console.log(`플레이어 접속: ${playerId}`);
-        const newPlayer = {
-            id: playerId,
-            position: { x: 0, y: 0, z: 0 },
-        }
-        const spawnMsg = JSON.stringify({
-            type: "NewPlayer",
-            data: newPlayer
-        });
+        const newPlayer = { id: playerId, position: { x: 0, y: 0, z: 0 } };
+        players[playerId] = newPlayer;
 
+        ws.send(JSON.stringify({ type: "AssingID", data: { id: playerId } })); //본인 id전송
+        // 1) 기존 플레이어에게 새 플레이어 등장 메시지
         wss.clients.forEach(client => {
-            if (client.readyState === 1) {
-                client.send(spawnMsg);
+            if (client.readyState === 1 && client !== ws) {
+                client.send(JSON.stringify({ type: "NewPlayer", data: newPlayer }));
             }
         });
-   
-        ws.send(JSON.stringify({ type: "AssingID", id: playerId })); //본인 id전송
 
-        ws.on('message', (msg) => {
-            const data = JSON.parse(msg);
+        // 2) 새 플레이어에게 기존 플레이어 정보 전송
+        const existingPlayers = Object.values(players)
+            .filter(p => p.id !== playerId);  // 자기 자신 제외
+        ws.send(JSON.stringify({ type: "existingPlayers", data: existingPlayers }));
 
-            switch (data.type) {
+        // 3) 새 플레이어에게 자기 자신 정보 전송 (생성용)
+        ws.send(JSON.stringify({ type: "NewPlayer", data: newPlayer }));
+
+
+        ws.on('message', (message) => {
+            const msg = JSON.parse(message);
+            const data = msg.data;
+            switch (msg.type) {
             
                     //여기서부터 좀비
                 case 'registerZombie':
                     zombies[data.id] = {
                         hp: data.hp,
-                        template: data.template // 나중에 템플릿/스킬 정보도 저장 가능
+                        template: data.template, // 나중에 템플릿/스킬 정보도 저장 가능
+                        position: data.position || { x: 0, y: 0, z: 0 },
                     };
                     console.log(`Zombie registered: ID=${data.id}, HP=${data.hp}`);
                     break;
@@ -64,38 +66,66 @@ function initWebSocket(server) {
 
                         if (isDead) delete zombies[data.id];
                     }
-                    break;
+                    break;            
 
+                case 'zombieUpdate':
+                    break;
                     // 여기서 부터 플레이어
                 case 'registerPlayer':
                     players[data.id] = {
-                        currentHP: data.currentHP,
+                        id : data.id,
+                        hp: data.hp,
                         maxHP: data.maxHP,
-
+                        position: { x: 0, y: 0, z: 0 }
                     };
-                    console.log(`Player registered: ID=${data.id}, MaxHP=${data.MaxHP}`);
+                    console.log(`Player registered: ID=${data.id}, MaxHP=${data.maxHP}`);
                     break;
 
                 case 'damagePlayer':
                     const p = players[data.id];
                     if (p) {
-                        p.currentHP -= data.damage;
-                        const isDead = p.currentHP <= 0;
+                        p.hp -= data.damage;
+                        const isDead = p.hp <= 0;
 
                         const hitMsg = JSON.stringify({
                             type: 'playerHit',
                             id: data.id,
-                            currentHP: p.currentHP > 0 ? p.currentHP : 0
+                            hp: p.hp > 0 ? p.hp : 0
                         });
 
-                        wss.client.forEach(client => {
+                        wss.clients.forEach(client => {
                             if (client.readyState === 1) client.send(hitMsg);
-                        });                    
+                        });
+                        console.log(`Player registered: ID=${data.id}, currentHP=${p.hp}`);
                     }
-                    break;
-
+                    break;           
                 case 'playerUpdate':
-                    players[data.id] = data;
+  
+                    if (players[data.id]) {
+                        players[data.id].position = {
+                            x: data.position.x,
+                            y: data.position.y,
+                            z: data.position.z
+                        };
+                    }
+
+                    const playerPosMsg = JSON.stringify({
+                        type: 'playerPosUpdate',
+                        data: {
+                            id: data.id,
+                            position: {
+                                x: players[data.id].position.x,
+                                y: players[data.id].position.y,
+                                z: players[data.id].position.z
+                            }
+                        
+                        }
+                  
+                    });
+                    console.log('playerUpdate:', data.id, players[data.id].x, players[data.id].position.y, data.z, players[data.id]);
+                    wss.clients.forEach(client => {
+                        if (client.readyState === 1 && client !== ws) client.send(playerPosMsg);
+                    });
                     break;
 
                 case 'nightStart':
@@ -112,7 +142,7 @@ function initWebSocket(server) {
         ws.on('close', () => console.log('클라이언트 연결 종료'));
     });
 
-    // 100ms 마다 상태 브로드캐스트
+/*    // 100ms 마다 상태 브로드캐스트
     setInterval(() => {
         const state = { players, zombies };
         const msg = JSON.stringify({ type: 'stateUpdate', data: state });
@@ -120,7 +150,7 @@ function initWebSocket(server) {
         wss.clients.forEach(client => {
             if (client.readyState === 1) client.send(msg);
         });
-    }, 100);
+    }, 100);*/
 }
 
 module.exports = initWebSocket;

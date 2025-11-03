@@ -22,6 +22,11 @@ public class MiniGameController : Singleton<MiniGameController>
     {
         numbers = new int[numberCount];       
         ResetPasswordGame();
+        GameManager.Instance.OnPlayerIDAssigned += SetPlayerController;
+    }
+    private void SetPlayerController()
+    {
+        player = GameManager.Instance.GetPlayerID;
     }
     #region 비밀번호 정답 맞추기 게임
     /// <summary>

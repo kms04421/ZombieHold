@@ -3,7 +3,7 @@ using System.Diagnostics;
 [System.Serializable]
 public class ZombieData
 {
-    public int id;
+    public string id;
     public float maxHp;
     public float hpMultiplier;
     public float speed;
