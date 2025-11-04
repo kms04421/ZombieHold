@@ -36,14 +36,12 @@ public class GameManager : Singleton<GameManager>
 
         Addressables.LoadAssetAsync<GameObject>(Key).Completed += (handle) =>
         {
-            Debug.Log("AddMultiPlayer" + MultiClient.Instance.myPlayerID);
             GameObject prefab = handle.Result;
             if (prefab != null)
             {
                 // 기존 반복문 제거
                 if (!PlayerDic.ContainsKey(data.id))
                 {
-                    Debug.Log("Dic없음");
                     PlayerController player = Instantiate(prefab).GetComponent<PlayerController>();
                     player.playerData.id = data.id;
                     PlayerDic.Add(data.id, player);
@@ -99,6 +97,13 @@ public class GameManager : Singleton<GameManager>
             {
                 return null;
             }
+        }
+    }
+    public int GetPlayerCount
+    {
+        get
+        {
+            return (int)PlayerDic.Count;
         }
     }
     /// <summary>

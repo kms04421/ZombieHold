@@ -127,7 +127,20 @@ function initWebSocket(server) {
                         if (client.readyState === 1 && client !== ws) client.send(playerPosMsg);
                     });
                     break;
-
+                case 'EquipWeapon':
+                    const equipMsg = JSON.stringify({
+                        type: "EquipWeapon",
+                        data: {
+                            id : data.id,
+                            equippedWeapon : data.equippedWeapon
+                        }
+                    });
+                    wss.clients.forEach(client => {
+                        if (client !== ws && client.readyState === 1) {
+                            client.send(equipMsg);
+                        }
+                    });
+                    break;
                 case 'nightStart':
                     const zombieCount = Math.floor(Math.random() * 5) + 5;
                     const spawnMsg = JSON.stringify({ type: 'spawnZombie', count: zombieCount });

@@ -373,7 +373,6 @@ public class PlayerController : MonoBehaviour
     /// <param name="newGun"></param>
     public void EquipGun(GunBase newGun)
     {
-        if (!isLocalPlayer) return;
         currentGun = newGun;
         frInverseKinematic.SetIK(true);
         animator.SetBool("IsEquipped", true);

@@ -109,11 +109,25 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
                 SlotManager.Instance.SetPlayerUI();
                 break;
             case ItemType.Weapon:
-                GunBase gunBase = SlotManager.Instance.GetWeaponTrans(item.template.name);
+                GunBase gunBase = SlotManager.Instance.GetWeaponTrans(item.template.name , player);
                 if (gunBase != null)
                 {                 
                     player.EquipGun(gunBase);
-                    SlotManager.Instance.SetPlayerUI();
+                    if(player.playerData.id == MultiClient.Instance.myPlayerID)
+                    {
+                        SlotManager.Instance.SetPlayerUI();
+                        ActorData data = new ActorData
+                        {
+                            id = player.playerData.id,
+                            equippedWeapon = item.template.name,
+                        };
+                        NetworkMessage msg = new NetworkMessage
+                        {
+                            type = "EquipWeapon",
+                            data = data
+                        };
+                        MultiClient.Instance.SendPlayerToSerber(msg);
+                    }
                 }
 
                 break;

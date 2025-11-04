@@ -61,7 +61,7 @@ public class MultiClient : Singleton<MultiClient>
                 hp = MaxHP,
                 maxHP = MaxHP
             }
-      
+
         };
         string json = JsonUtility.ToJson(msg);
         ws.Send(json);
@@ -82,7 +82,7 @@ public class MultiClient : Singleton<MultiClient>
                 id = id,
                 damage = damage
             }
-   
+
         };
         string json = JsonUtility.ToJson(msg);
         ws.Send(json);
@@ -104,7 +104,7 @@ public class MultiClient : Singleton<MultiClient>
                 id = id,
                 hp = hp
             }
-          
+
         };
 
         string json = JsonUtility.ToJson(msg);
@@ -129,20 +129,19 @@ public class MultiClient : Singleton<MultiClient>
                 damage = damage
             }
 
-               
+
         };
         string json = JsonUtility.ToJson(msg);
         ws.Send(json);
 
         // Debug.Log($"서버 데미지 전송: ID={id} 에게 HP={damage} 줍니다");
     }
-    public void SendPlayerPosToSerber(ActorData data)
+    /// <summary>
+    /// 플레이어 정보 서버에 보냄
+    /// </summary>
+    /// <param name="msg"></param>
+    public void SendPlayerToSerber(NetworkMessage msg)
     {
-        NetworkMessage msg = new NetworkMessage
-        {
-            type = "playerUpdate",
-            data = data
-        };
         ws.Send(JsonUtility.ToJson(msg));
     }
     void Update()
@@ -189,11 +188,11 @@ public class MultiClient : Singleton<MultiClient>
                 mainThreadActions.Enqueue(() =>
                 {
                     GameManager.Instance.AddMultiPlayer(msg.data);
-                
+
                 });
 
                 break;
-            case "existingPlayers":           
+            case "existingPlayers":
                 PlayerMessage players = JsonUtility.FromJson<PlayerMessage>(json);
                 mainThreadActions.Enqueue(() =>
                 {
@@ -208,29 +207,44 @@ public class MultiClient : Singleton<MultiClient>
                     }
                 });
                 break;
+            case "EquipWeapon":
+                Debug.Log("EquipWeapon" + msg.data.equippedWeapon);
+                mainThreadActions.Enqueue(() =>
+                {
+                    foreach (var p in GameManager.Instance.PlayerDic)
+                    {
+                        if(p.Value.playerData.id == msg.data.id)
+                        {
+                            GunBase gunBase = SlotManager.Instance.GetWeaponTrans(msg.data.equippedWeapon, p.Value);
+                            if (gunBase != null)
+                            {
+                                p.Value.EquipGun(gunBase);
+
+                            }
+                        }
+                    
+                    }
+                });
+                break;
             case "AssingID":
                 Debug.Log("AssingID : " + msg.data.id);
                 myPlayerID = msg.data.id; // 내 로컬 플레이어 ID
-               
-        
+
+
                 break;
             case "playerPosUpdate":
-
-                Debug.Log(json);
-                Debug.Log("접근" + msg.data.position.x);
                 if (GameManager.Instance.PlayerDic.ContainsKey(msg.data.id))
                 {
                     mainThreadActions.Enqueue(() =>
                     {
                         // 서버 좌표를 Vector3로 변환
-                       
+
                         Vector3 pos = msg.data.position.ToVector3();
                         // 또는 부드럽게 이동시키고 싶다면
                         Transform t = GameManager.Instance.PlayerDic[msg.data.id].transform;
 
-                        // t.position = Vector3.Lerp(t.position, pos, 0.5f);
-                        t.position = pos;
-                        Debug.Log("이동중");
+                        t.position = Vector3.Lerp(t.position, pos, 1f);
+                        // t.position = pos;
                     });
                 }
                 break;

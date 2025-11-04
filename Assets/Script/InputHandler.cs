@@ -45,7 +45,7 @@ public class InputHandler : MonoBehaviour
 
         if (slotIndex != -1)
         {
-            SlotManager.Instance.UseUiSlot(slotIndex);
+            SlotManager.Instance.UseUiSlot(slotIndex, playerController);
         }
     }
 /*    /// <summary>

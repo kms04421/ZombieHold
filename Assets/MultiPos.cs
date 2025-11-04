@@ -21,7 +21,12 @@ public class MultiPos : MonoBehaviour
                     z = transform.position.z
                 }
             };
-            MultiClient.Instance.SendPlayerPosToSerber(data);
+            NetworkMessage msg = new NetworkMessage
+            {
+                type = "playerUpdate",
+                data = data
+            };
+            MultiClient.Instance.SendPlayerToSerber(msg);
             yield return new WaitForSeconds(0.05f); // 20fps Á¤µµ
         }
     }

@@ -24,6 +24,7 @@ public struct ActorData
     public float maxHP; // 플레이어만 필요
     public float damage;
     public PositionData position;
+    public string equippedWeapon; // 무기이름
 }
 [Serializable]
 public class ActorListMessage

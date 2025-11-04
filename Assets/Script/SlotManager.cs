@@ -58,22 +58,22 @@ public class SlotManager : Singleton<SlotManager>
         playerController = GameManager.Instance.GetPlayerID;
         SetPlayerUI();
     }
-    public void UseUiSlot(int index)
+    public void UseUiSlot(int index , PlayerController _playerController)
     {
         if (uiSlots[index] == null) return;
-        uiSlots[index].Use(playerController);
+        uiSlots[index].Use(_playerController);
     }
     /// <summary>
     /// 무기중찾기
     /// </summary>
     /// <returns></returns>
-    public GunBase GetWeaponTrans(string name)
+    public GunBase GetWeaponTrans(string name , PlayerController _playerController)
     {
-        Transform foundChild = playerController.weaponTransform.Find(name);
+
+        Transform foundChild = _playerController.weaponTransform.Find(name);
 
         if (foundChild != null)
         {
-            Debug.Log("자식 찾음: " + foundChild.name);
             GunBase gunBase = foundChild.GetComponent<GunBase>();
             if (gunBase != null)
             {
