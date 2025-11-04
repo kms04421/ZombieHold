@@ -24,6 +24,7 @@ public struct ActorData
     public float maxHP; // 플레이어만 필요
     public float damage;
     public PositionData position;
+    public RotationData rotation;
     public string equippedWeapon; // 무기이름
 }
 [Serializable]
@@ -40,7 +41,30 @@ public struct PositionData
     public float z;
 
     public Vector3 ToVector3() => new Vector3(x, y, z);
+
+    
 }
+[System.Serializable]
+public struct RotationData
+{
+    public float x;
+    public float y;
+    public float z;
+    public float w;
+
+    public Quaternion ToQuaternion() => new Quaternion(x, y, z, w);
+    public static RotationData FromQuaternion(Quaternion q)
+    {
+        return new RotationData
+        {
+            x = q.x,
+            y = q.y,
+            z = q.z,
+            w = q.w
+        };
+    }
+}
+
 [Serializable]
 public struct ZombieHitMessageFromServer
 {

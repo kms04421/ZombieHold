@@ -232,19 +232,21 @@ public class MultiClient : Singleton<MultiClient>
 
 
                 break;
-            case "playerPosUpdate":
+            case "playerPosUpdate": // 플레이어 위치 회전값 업데이트
                 if (GameManager.Instance.PlayerDic.ContainsKey(msg.data.id))
                 {
                     mainThreadActions.Enqueue(() =>
                     {
                         // 서버 좌표를 Vector3로 변환
 
-                        Vector3 pos = msg.data.position.ToVector3();
                         // 또는 부드럽게 이동시키고 싶다면
                         Transform t = GameManager.Instance.PlayerDic[msg.data.id].transform;
-
+                        //위치 변경
+                        Vector3 pos = msg.data.position.ToVector3();
                         t.position = Vector3.Lerp(t.position, pos, 1f);
-                        // t.position = pos;
+                        //각도 변경
+                        Quaternion rot = msg.data.rotation.ToQuaternion();
+                        t.rotation = Quaternion.Lerp(t.rotation, rot, 1f); // 부드럽게
                     });
                 }
                 break;

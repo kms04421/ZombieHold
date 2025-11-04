@@ -19,7 +19,9 @@ public class MultiPos : MonoBehaviour
                     x = transform.position.x,
                     y = transform.position.y,
                     z = transform.position.z
-                }
+                },
+                rotation = RotationData.FromQuaternion(transform.rotation)
+
             };
             NetworkMessage msg = new NetworkMessage
             {

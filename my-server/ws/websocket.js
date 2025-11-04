@@ -76,7 +76,8 @@ function initWebSocket(server) {
                         id : data.id,
                         hp: data.hp,
                         maxHP: data.maxHP,
-                        position: { x: 0, y: 0, z: 0 }
+                        position: { x: 0, y: 0, z: 0 },
+                        rotation: {x:0,y:0,z:0 ,w:0}
                     };
                     console.log(`Player registered: ID=${data.id}, MaxHP=${data.maxHP}`);
                     break;
@@ -100,29 +101,42 @@ function initWebSocket(server) {
                     }
                     break;           
                 case 'playerUpdate':
-  
+
                     if (players[data.id]) {
                         players[data.id].position = {
                             x: data.position.x,
                             y: data.position.y,
                             z: data.position.z
                         };
+                        players[data.id].rotation = {
+                            x: data.rotation.x,
+                            y: data.rotation.y,
+                            z: data.rotation.z,
+                            w: data.rotation.w
+                        }
                     }
 
                     const playerPosMsg = JSON.stringify({
                         type: 'playerPosUpdate',
                         data: {
                             id: data.id,
+
                             position: {
                                 x: players[data.id].position.x,
                                 y: players[data.id].position.y,
                                 z: players[data.id].position.z
-                            }
+                            },
+                            rotation :{
+                                x: players[data.id].rotation.x,
+                                y: players[data.id].rotation.y,
+                                z: players[data.id].rotation.z,
+                                w: players[data.id].rotation.w
+                             }
                         
                         }
                   
                     });
-                    console.log('playerUpdate:', data.id, players[data.id].x, players[data.id].position.y, data.z, players[data.id]);
+                    console.log('playerUpdate:', data.id, players[data.id].rotation.x, players[data.id].rotation.y, players[data.id]);
                     wss.clients.forEach(client => {
                         if (client.readyState === 1 && client !== ws) client.send(playerPosMsg);
                     });
