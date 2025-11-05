@@ -20,6 +20,7 @@ public class GameManager : Singleton<GameManager>
     protected override void Awake()
     {
         base.Awake();
+        Application.runInBackground = true;
         PlayerDic = new Dictionary<string, PlayerController>();
     }
     private void Start()
@@ -47,8 +48,7 @@ public class GameManager : Singleton<GameManager>
                     PlayerDic.Add(data.id, player);
                     //클라이언트 작동시
                     if (player.playerData.id == MultiClient.Instance.myPlayerID)
-                    {
-                        
+                    {                 
                         TriggerPlayerIDAssigned(); // 자신의 플레이어컨트로러 저장
                     }
 

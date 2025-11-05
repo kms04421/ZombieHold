@@ -25,7 +25,6 @@ public class MultiClient : Singleton<MultiClient>
 
         ws.OnOpen += (sender, e) =>
         {
-            Debug.Log("서버 연결 성공!");
             // struct 객체 생성
             MessageData data = new MessageData
             {
@@ -184,7 +183,6 @@ public class MultiClient : Singleton<MultiClient>
                 }
                 break;
             case "NewPlayer":
-                Debug.Log("NewPlayer : " + msg.data.id);
                 mainThreadActions.Enqueue(() =>
                 {
                     GameManager.Instance.AddMultiPlayer(msg.data);
@@ -226,6 +224,23 @@ public class MultiClient : Singleton<MultiClient>
                     }
                 });
                 break;
+            case "UnEquipWeapon":
+                mainThreadActions.Enqueue(() =>
+                {
+                    foreach (var p in GameManager.Instance.PlayerDic)
+                    {
+                        if (p.Value.playerData.id == msg.data.id)
+                        {
+                            if (p.Value.currentGun != null)
+                            {
+                                p.Value.UnequipGun();
+
+                            }
+                        }
+
+                    }
+                });
+                break;
             case "AssingID":
                 Debug.Log("AssingID : " + msg.data.id);
                 myPlayerID = msg.data.id; // 내 로컬 플레이어 ID
@@ -247,9 +262,22 @@ public class MultiClient : Singleton<MultiClient>
                         //각도 변경
                         Quaternion rot = msg.data.rotation.ToQuaternion();
                         t.rotation = Quaternion.Lerp(t.rotation, rot, 1f); // 부드럽게
+                      //  Debug.Log($"받은 ID: {msg.data.id}, 위치: {msg.data.position.x} {msg.data.position.y} {msg.data.position.z}");
                     });
                 }
                 break;
+            case "PlayerShoot":
+                if (GameManager.Instance.PlayerDic.ContainsKey(msg.data.id))
+                {
+                    Debug.Log("PlayerShoot"+ msg.data.isbool);
+                    mainThreadActions.Enqueue(() =>
+                    {
+                        GameManager.Instance.PlayerDic[msg.data.id].OnFire(msg.data.isbool);
+                       
+                    });
+                }
+                break;
+           
                 // 다른 타입도 처리 가능
         }
     }

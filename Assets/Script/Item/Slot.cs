@@ -106,7 +106,21 @@ public class Slot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler
             case ItemType.Placeable:
                 PlacementManager.Instance.StartPlacement(item.template.prefab, OnPlacementResult);
                 player.UnequipGun();
-                SlotManager.Instance.SetPlayerUI();
+                if (player.playerData.id == MultiClient.Instance.myPlayerID)
+                {
+                    SlotManager.Instance.SetPlayerUI();
+                    ActorData data = new ActorData
+                    {
+                        id = player.playerData.id,
+                        equippedWeapon = item.template.name,
+                    };
+                    NetworkMessage msg = new NetworkMessage
+                    {
+                        type = "UnEquipWeapon",
+                        data = data
+                    };
+                    MultiClient.Instance.SendPlayerToSerber(msg);
+                }
                 break;
             case ItemType.Weapon:
                 GunBase gunBase = SlotManager.Instance.GetWeaponTrans(item.template.name , player);

@@ -136,7 +136,7 @@ function initWebSocket(server) {
                         }
                   
                     });
-                    console.log('playerUpdate:', data.id, players[data.id].rotation.x, players[data.id].rotation.y, players[data.id]);
+                   // console.log('playerUpdate:', data.id, players[data.id].rotation.x, players[data.id].rotation.y, players[data.id]);
                     wss.clients.forEach(client => {
                         if (client.readyState === 1 && client !== ws) client.send(playerPosMsg);
                     });
@@ -152,6 +152,33 @@ function initWebSocket(server) {
                     wss.clients.forEach(client => {
                         if (client !== ws && client.readyState === 1) {
                             client.send(equipMsg);
+                        }
+                    });
+                    break;
+                case 'UnEquipWeapon':
+                    const unEquipMsg = JSON.stringify({
+                        type: "UnEquipWeapon",
+                        data: {
+                            id: data.id
+                        }
+                    });
+                    wss.clients.forEach(client => {
+                        if (client !== ws && client.readyState === 1) {
+                            client.send(unEquipMsg);
+                        }
+                    });
+                    break;
+                case 'PlayerShoot':
+                    const ShootMsg = JSON.stringify({
+                        type: "PlayerShoot",
+                        data: {
+                            id: data.id,
+                            isbool: data.isbool
+                        }
+                    });
+                    wss.clients.forEach(client => {
+                        if (client !== ws && client.readyState === 1) {
+                            client.send(ShootMsg);
                         }
                     });
                     break;

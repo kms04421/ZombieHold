@@ -23,6 +23,7 @@ public struct ActorData
     public float hp;
     public float maxHP; // 플레이어만 필요
     public float damage;
+    public bool isbool; // 모든 bool값이용 처리용
     public PositionData position;
     public RotationData rotation;
     public string equippedWeapon; // 무기이름

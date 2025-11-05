@@ -71,12 +71,13 @@ public class GunBase : MonoBehaviour
     /// <summary>
     /// 총기 발사전 시작함수 (연발 단발 구분을 위해 사용)
     /// </summary>
-    public virtual void StartFiring()
+    /// <param name="isLocalPlayer"> 롤컬 플레이어인지 구분용</param>
+    public virtual void StartFiring(bool isLocalPlayer = true)
     {
         if (gunData.isFullAuto)
             isFiring = true;
         else
-            Shoot();
+            Shoot(isLocalPlayer);
     }
     /// <summary>
     /// 총기 발사 종료 함수
@@ -88,9 +89,10 @@ public class GunBase : MonoBehaviour
 
 
     /// <summary>
-    /// 총기 발사
+    /// 총기발사 
     /// </summary>
-    public virtual void Shoot()
+    /// <param name="isLocalPlayer"> 롤컬 플레이어일경우 true 데미지,UI 기능 수행 아닐경우 두기능 수행안함</param>
+    public virtual void Shoot(bool isLocalPlayer = true)
     {
         if (CurrentAmmo == 0) return;
         // Ray 생성
@@ -100,9 +102,13 @@ public class GunBase : MonoBehaviour
         Debug.DrawRay(ray.origin, ray.direction * gunData.range, Color.red, 1f);
         if (Physics.Raycast(ray, out RaycastHit hit, gunData.range))
         {
-            var hitbox = hit.collider.GetComponent<HitBox>();
-            if (hitbox != null)
-                hitbox.OnHit(gunData.damage);
+            if (isLocalPlayer)
+            {
+                var hitbox = hit.collider.GetComponent<HitBox>();
+                if (hitbox != null)
+                    hitbox.OnHit(gunData.damage);
+            }
+      
             if (hitEffectPrefab != null)
             {
                 if(hit.transform.tag =="enemy")
@@ -128,9 +134,11 @@ public class GunBase : MonoBehaviour
         // 사운드
         if (audioSource != null && gunData.gunShotClip != null)
             audioSource.PlayOneShot(gunData.gunShotClip);
-
-        CurrentAmmo--;
-        PlayerUI.Instance.SetCurrentAmmo(CurrentAmmo);
+        if (isLocalPlayer)
+        {
+            CurrentAmmo--;
+            PlayerUI.Instance.SetCurrentAmmo(CurrentAmmo);
+        }
     }
 
     /// <summary>

@@ -16,9 +16,18 @@ public class GunAR : GunBase
     /// <summary>
     /// ÃÑ½î±â
     /// </summary>
-    public override void Shoot()
+    public override void Shoot(bool isLocalPlayer = true)
     {
-        base.Shoot();
+        if (isLocalPlayer)
+        {
+            base.Shoot();
+        }
+        else
+        {
+
+            base.Shoot(false);
+        }
+    
         StartRecoil();
     }
 

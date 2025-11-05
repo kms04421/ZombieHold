@@ -2,8 +2,11 @@ using System.Collections;
 using UnityEngine;
 public class MultiPos : MonoBehaviour
 {
+    private PlayerController player;
     private void Start()
     {
+        player = GetComponent<PlayerController>();
+        if (MultiClient.Instance.myPlayerID == player.playerData.id)
         StartCoroutine(SendPositionRoutine());
     }
     private IEnumerator SendPositionRoutine()

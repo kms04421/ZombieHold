@@ -96,8 +96,9 @@ public class PlayerController : MonoBehaviour
         InventoryState = new InventoryState(this);
         MenuState = new MenuState(this);
         ChangeState(NormalState);
+        Debug.Log(currentState);
     }
-
+    
     void Update()
     {
         if (isLocalPlayer)
@@ -114,7 +115,6 @@ public class PlayerController : MonoBehaviour
     /// <param name="newState"></param>
     public void ChangeState(IPlayerState newState)
     {
-        if (!isLocalPlayer) return;
         currentState?.Exit();
         currentState = newState;
         currentState.Enter();
@@ -332,17 +332,50 @@ public class PlayerController : MonoBehaviour
     /// <param name="context"></param>
     public void OnFire(bool isShoot)
     {
-        if (!isLocalPlayer) return;
         if (currentState != NormalState) return;
         if (isReload) return;
-
         if (isShoot)
         {
-            ShakeCamera(0.7f, 0.7f, 0.1f);
-            currentGun?.StartFiring();
+            if (isLocalPlayer)
+            {
+                ShakeCamera(0.7f, 0.7f, 0.1f);
+                currentGun?.StartFiring();
+                NetworkMessage msg = new NetworkMessage
+                {
+                    type = "PlayerShoot",
+                    data = new ActorData
+                    {
+                        id = playerData.id,
+                        isbool = true,
+                    }
+
+                };
+                MultiClient.Instance.SendPlayerToSerber(msg);
+            }
+            else
+            {
+                ShakeCamera(0.7f, 0.7f, 0.1f);
+                currentGun?.StartFiring(false);
+            }
+
+     
         }
         else
+        {
             currentGun?.StopFiring();
+            NetworkMessage msg = new NetworkMessage
+            {
+                type = "PlayerShoot",
+                data = new ActorData
+                {
+                    id = playerData.id,
+                    isbool = false,
+                }
+
+            };
+            MultiClient.Instance.SendPlayerToSerber(msg);
+        }
+        
 
     }
     private bool isReload = false; // 장전중 액션 정지용
@@ -383,7 +416,6 @@ public class PlayerController : MonoBehaviour
     /// <param name="newGun"></param>
     public void UnequipGun()
     {
-        if (!isLocalPlayer) return;
         if (currentGun == null) return;
         currentGun.gameObject.SetActive(false);
         currentGun = null;
