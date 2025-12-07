@@ -74,7 +74,7 @@ public class PlayerController : MonoBehaviour
         if (MultiClient.Instance.myPlayerID == playerData.id)
         {
             isLocalPlayer = true;
-       
+
         }
         else
         {
@@ -82,7 +82,7 @@ public class PlayerController : MonoBehaviour
             normalCam.gameObject.SetActive(false);
         }
 
-            noiseComponent = vCam.GetComponentInChildren<CinemachineBasicMultiChannelPerlin>();
+        noiseComponent = vCam.GetComponentInChildren<CinemachineBasicMultiChannelPerlin>();
         if (noiseComponent == null)
             Debug.LogWarning("Noise component not found!");
 
@@ -96,9 +96,8 @@ public class PlayerController : MonoBehaviour
         InventoryState = new InventoryState(this);
         MenuState = new MenuState(this);
         ChangeState(NormalState);
-        Debug.Log(currentState);
     }
-    
+
     void Update()
     {
         if (isLocalPlayer)
@@ -166,7 +165,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpForce * -1.5f * gravity);
-            animator.SetBool("isJump", true);
+            StartAnimator("isJump", animatorType.SetBool, true);
             isGrounded = false;
             jumpPos = GetGroundPoint();
         }
@@ -174,13 +173,13 @@ public class PlayerController : MonoBehaviour
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
 
-        animator.SetBool("isMove", moveDir.magnitude > 0.1f);
-        animator.SetBool("isRun", isRunning);
-        animator.SetFloat("xDir", moveX);
-        animator.SetFloat("yDir", -moveZ);
+        StartAnimator("isMove", animatorType.SetBool, moveDir.magnitude > 0.1f);
+        StartAnimator("isRun", animatorType.SetBool, isRunning);
+        StartAnimator("xDir", animatorType.SetFloat, false, moveX);
+        StartAnimator("yDir", animatorType.SetFloat, false, -moveZ);
 
         if (isGrounded && animator.GetBool("isJump"))
-            animator.SetBool("isJump", false);
+            StartAnimator("isJump", animatorType.SetBool, false);
     }
     public void ApplyGravity()
     {
@@ -194,7 +193,7 @@ public class PlayerController : MonoBehaviour
     }
     private Vector3 GetGroundPoint()
     {
-      
+
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 10f))
         {
             return hit.point; // 레이가 땅에 닿은 위치 반환
@@ -218,6 +217,30 @@ public class PlayerController : MonoBehaviour
         transform.Rotate(Vector3.up * mouseX);
     }
     //추가 start
+    /// <summary>
+    /// 플레이어 애니메이터 실행
+    /// </summary>
+    /// <param name="_animatorName"></param>
+    /// <param name="_animatorType"></param>
+    /// <param name="_isbool"></param>
+    /// <param name="_isfloat"></param>
+    public void StartAnimator(string _animatorName, animatorType _animatorType, bool _isbool = false, float _isfloat = 0)
+    {
+       
+        switch (_animatorType)
+        {
+            case animatorType.SetBool:
+                animator.SetBool(_animatorName, _isbool);
+                break;
+            case animatorType.SetFloat:
+                animator.SetFloat(_animatorName, _isfloat);
+                break;
+            case animatorType.SetTrigger:
+                animator.SetTrigger(_animatorName);
+                break;
+        }
+        MultiClient.Instance.SendPlayerAnimator(playerData, _animatorName, _animatorType, _isbool, _isfloat); // 서버 플레이어 애니메이터 실행 
+    }
 
     /// <summary>
     /// 화면 흔들림 
@@ -293,8 +316,7 @@ public class PlayerController : MonoBehaviour
         // IK 끄기
         frInverseKinematic.SetIKReloadActive(false);
         // 리로드 애니메이션 실행
-        animator.SetTrigger("Reload");
-
+        StartAnimator("Reload", animatorType.SetTrigger);
         // 코루틴으로 일정 시간 후 다시 IK 켜기 (애니메이션 길이에 맞춰 조절)
         StartCoroutine(RestoreIKAfterDelay(3.1f));
     }
@@ -358,7 +380,7 @@ public class PlayerController : MonoBehaviour
                 currentGun?.StartFiring(false);
             }
 
-     
+
         }
         else
         {
@@ -375,7 +397,7 @@ public class PlayerController : MonoBehaviour
             };
             MultiClient.Instance.SendPlayerToSerber(msg);
         }
-        
+
 
     }
     private bool isReload = false; // 장전중 액션 정지용

@@ -1,6 +1,11 @@
 using System;
 using UnityEngine;
-
+public enum animatorType
+{
+    SetBool,
+    SetFloat,
+    SetTrigger
+}
 [System.Serializable]
 public struct PlayerMessage
 {
@@ -19,14 +24,17 @@ public class NetworkMessage
 [Serializable]
 public struct ActorData
 {
-    public string id;
-    public float hp;
+    public string id; // 플레이어 id
+    public float hp; //HP
     public float maxHP; // 플레이어만 필요
-    public float damage;
+    public float damage; // 데미지
     public bool isbool; // 모든 bool값이용 처리용
+    public float isfloat; //float값 저장용
     public PositionData position;
     public RotationData rotation;
     public string equippedWeapon; // 무기이름
+    public string animatorName;
+    public animatorType animatorType;
 }
 [Serializable]
 public class ActorListMessage

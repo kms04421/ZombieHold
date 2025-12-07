@@ -143,6 +143,31 @@ public class MultiClient : Singleton<MultiClient>
     {
         ws.Send(JsonUtility.ToJson(msg));
     }
+    /// <summary>
+    /// 플레이어 애니메이션 정보 서버에 전달
+    /// </summary>
+    /// <param name="player">PlayerData</param>
+    /// <param name="_animatorName">애니메이션 이름</param>
+    /// <param name="_animatorType">애니메이션 타입</param>
+    /// <param name="_isbool">애니메아션 bool값</param>
+    public void SendPlayerAnimator(PlayerData player, string _animatorName , animatorType  _animatorType, bool _isbool = false, float _isfloat = 0)
+    {
+        if (player.id != myPlayerID) return;
+        ActorData data = new ActorData
+        {
+            id = player.id,
+            animatorName = _animatorName,
+            animatorType = _animatorType,
+            isbool = _isbool,
+            isfloat = _isfloat
+        };
+        NetworkMessage msg = new NetworkMessage
+        {
+            type = "PlayerAnimator",
+            data = data
+        };
+        ws.Send(JsonUtility.ToJson(msg));
+    }
     void Update()
     {
         while (mainThreadActions.Count > 0)
@@ -269,7 +294,6 @@ public class MultiClient : Singleton<MultiClient>
             case "PlayerShoot":
                 if (GameManager.Instance.PlayerDic.ContainsKey(msg.data.id))
                 {
-                    Debug.Log("PlayerShoot"+ msg.data.isbool);
                     mainThreadActions.Enqueue(() =>
                     {
                         GameManager.Instance.PlayerDic[msg.data.id].OnFire(msg.data.isbool);
@@ -277,7 +301,16 @@ public class MultiClient : Singleton<MultiClient>
                     });
                 }
                 break;
-           
+            case "PlayerAnimator":
+                if (GameManager.Instance.PlayerDic.ContainsKey(msg.data.id))
+                {
+                    mainThreadActions.Enqueue(() =>
+                    {
+                        GameManager.Instance.PlayerDic[msg.data.id].StartAnimator(msg.data.animatorName,msg.data.animatorType, msg.data.isbool,msg.data.isfloat);
+
+                    });
+                }
+                break;
                 // 다른 타입도 처리 가능
         }
     }

@@ -32,7 +32,7 @@ public class MultiPos : MonoBehaviour
                 data = data
             };
             MultiClient.Instance.SendPlayerToSerber(msg);
-            yield return new WaitForSeconds(0.05f); // 20fps Á¤µµ
+            yield return new WaitForSeconds(0.01f); 
         }
     }
 }

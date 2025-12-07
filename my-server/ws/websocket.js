@@ -182,6 +182,23 @@ function initWebSocket(server) {
                         }
                     });
                     break;
+                case 'PlayerAnimator':
+                    const playerAnimatorMsg = JSON.stringify({
+                        type: "PlayerAnimator",
+                        data: {
+                            id: data.id,
+                            animatorName: data.animatorName,
+                            animatorType: data.animatorType,
+                            isfloat: data.isfloat,
+                            isbool: data.isbool
+                        }
+                    });
+                    wss.clients.forEach(client => {
+                        if (client !== ws && client.readyState === 1) {
+                            client.send(playerAnimatorMsg);
+                        }
+                    });
+                    break;
                 case 'nightStart':
                     const zombieCount = Math.floor(Math.random() * 5) + 5;
                     const spawnMsg = JSON.stringify({ type: 'spawnZombie', count: zombieCount });
